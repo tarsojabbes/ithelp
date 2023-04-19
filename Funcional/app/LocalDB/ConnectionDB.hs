@@ -23,6 +23,7 @@ createAnalista conn = do
                     \analista_nome VARCHAR(100) NOT NULL,\
                     \analista_email VARCHAR(100) NOT NULL,\
                     \analista_senha VARCHAR(100) NOT NULL,\
+                    \cargo VARCHAR(50) NOT NULL DEFAULT 'analista',\
                     \analista_avaliacao FLOAT NOT NULL)"
     return ()
 
@@ -32,6 +33,7 @@ createGestor conn = do
                     \gestor_id SERIAL PRIMARY KEY,\
                     \gestor_nome VARCHAR(100) NOT NULL,\
                     \gestor_email VARCHAR(100) NOT NULL,\
+                    \cargo VARCHAR(50) NOT NULL DEFAULT 'gestor',\
                     \gestor_senha VARCHAR(100) NOT NULL)"
     return ()
 
@@ -41,6 +43,7 @@ createUsuario conn = do
                     \usuario_id SERIAL PRIMARY KEY,\
                     \usuario_nome VARCHAR(100) NOT NULL,\
                     \usuario_email VARCHAR(100) NOT NULL,\
+                    \cargo VARCHAR(50) NOT NULL DEFAULT 'usuario',\
                     \usuario_senha VARCHAR(100) NOT NULL)"
     return ()
 
