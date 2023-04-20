@@ -1,4 +1,6 @@
 module Models.Usuario where
+import Database.PostgreSQL.Simple (FromRow)
+import Database.PostgreSQL.Simple.FromRow (field, FromRow (fromRow))
 
 data Usuario = Usuario {
     usuario_id :: Int,
@@ -6,3 +8,9 @@ data Usuario = Usuario {
     usuario_email :: String,
     usuario_senha :: String
 } deriving (Show, Read, Eq)
+
+instance FromRow Usuario where
+    fromRow = Usuario <$> field
+                        <*> field
+                        <*> field
+                        <*> field

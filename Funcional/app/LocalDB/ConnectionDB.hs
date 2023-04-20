@@ -1,6 +1,10 @@
 {-# LANGUAGE OverloadedStrings #-}
 module LocalDB.ConnectionDB where
 import Database.PostgreSQL.Simple
+import Controllers.AnalistaController (cadastrarAnalista)
+import Controllers.AtividadeController (cadastrarAtividade)
+import Controllers.ChamadoController (cadastrarChamado)
+import Controllers.ItemInventarioController (cadastrarItemInventario)
 
 -- Informações do banco de dados local
 localDB :: ConnectInfo
@@ -16,6 +20,7 @@ localDB = defaultConnectInfo {
 connectionMyDB :: IO Connection
 connectionMyDB = connect localDB
 
+-- Cria tabela para armazenar analistas
 createAnalista :: Connection -> IO()
 createAnalista conn = do
     execute_ conn "CREATE TABLE IF NOT EXISTS analista (\
@@ -23,9 +28,10 @@ createAnalista conn = do
                     \analista_nome VARCHAR(100) NOT NULL,\
                     \analista_email VARCHAR(100) NOT NULL,\
                     \analista_senha VARCHAR(100) NOT NULL,\
-                    \analista_avaliacao FLOAT NOT NULL)"
+                    \analista_avaliacao INTEGER NOT NULL)"
     return ()
 
+-- Cria tabela para armazenar gestores
 createGestor :: Connection -> IO()
 createGestor conn = do
     execute_ conn "CREATE TABLE IF NOT EXISTS gestor (\
@@ -35,6 +41,7 @@ createGestor conn = do
                     \gestor_senha VARCHAR(100) NOT NULL)"
     return ()
 
+-- Cria tabela para armazenar usuários
 createUsuario :: Connection -> IO()
 createUsuario conn = do
     execute_ conn "CREATE TABLE IF NOT EXISTS usuario (\
@@ -44,6 +51,7 @@ createUsuario conn = do
                     \usuario_senha VARCHAR(100) NOT NULL)"
     return ()
 
+-- Cria tabela para armazenar itens do inventário
 createInventario :: Connection -> IO()
 createInventario conn = do
     execute_ conn "CREATE TABLE IF NOT EXISTS inventario (\
@@ -53,6 +61,7 @@ createInventario conn = do
                     \item_data_aquisicao DATE NOT NULL)"
     return ()
 
+-- Cria tabela para armazenar chamados
 createChamado :: Connection -> IO()
 createChamado conn = do
     execute_ conn "CREATE TABLE IF NOT EXISTS chamado (\
@@ -64,6 +73,7 @@ createChamado conn = do
                     \chamado_analista_id INTEGER REFERENCES analista(analista_id))"
     return ()
 
+-- Cria tabelas para armezenar atividades
 createQuadroAtividade :: Connection -> IO()
 createQuadroAtividade conn = do
     execute_ conn "CREATE TABLE IF NOT EXISTS quadro_atividade (\
