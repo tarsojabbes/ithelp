@@ -1,7 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 module LocalDB.ConnectionDB where
 import Database.PostgreSQL.Simple
-import Controllers.AnalistaController (cadastrarAnalista)
+import Controllers.AnalistaController (cadastrarAnalista, buscarAnalistaPorId, buscarAnalistaPorEmail)
 import Controllers.AtividadeController (cadastrarAtividade)
 import Controllers.ChamadoController (cadastrarChamado)
 import Controllers.ItemInventarioController (cadastrarItemInventario)
@@ -94,4 +94,8 @@ iniciandoDatabase = do
   createInventario c
   createChamado c
   createQuadroAtividade c
+  analista1 <- buscarAnalistaPorId c 1
+  print analista1
+  analistaTarso <- buscarAnalistaPorEmail c "tarso@gmail"
+  print analistaTarso
   return c

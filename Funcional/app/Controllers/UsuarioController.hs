@@ -18,3 +18,25 @@ listarUsuarios conn = do
                         \u.usuario_email, \
                         \u.usuario_senha \
                         \FROM usuario u" :: IO [Usuario]
+
+buscarUsuarioPorId :: Connection -> Int -> IO (Maybe Usuario)
+buscarUsuarioPorId conn id = do
+    usuarioEncontrado <- query conn "SELECT u.usuario_id, \
+                        \u.usuario_nome, \
+                        \u.usuario_email, \
+                        \u.usuario_senha \
+                        \FROM usuario u WHERE u.usuario_id = ?" (Only id)
+    case usuarioEncontrado of
+        [row] -> return $ Just row
+        _ -> return Nothing
+
+buscarUsuarioPorEmail :: Connection -> String -> IO (Maybe Usuario)
+buscarUsuarioPorEmail conn email = do
+    usuarioEncontrado <- query conn "SELECT u.usuario_id, \
+                        \u.usuario_nome, \
+                        \u.usuario_email, \
+                        \u.usuario_senha \
+                        \FROM usuario u WHERE u.usuario_email = ?" (Only email)
+    case usuarioEncontrado of
+        [row] -> return $ Just row
+        _ -> return Nothing

@@ -2,7 +2,6 @@
 module Controllers.AnalistaController where
 import Database.PostgreSQL.Simple
 import Models.Analista
-import qualified Models.Analista
 
 cadastrarAnalista :: Connection -> String -> String -> String -> Int -> IO()
 cadastrarAnalista conn nome email senha avaliacao = do
@@ -21,3 +20,27 @@ listarAnalistas conn = do
                         \a.analista_senha, \
                         \a.analista_avaliacao \
                         \FROM analista a" :: IO [Analista]
+
+buscarAnalistaPorId :: Connection -> Int -> IO (Maybe Analista)
+buscarAnalistaPorId conn id = do
+    analistaEncontrado <- query conn "SELECT a.analista_id, \
+                                        \a.analista_nome, \
+                                        \a.analista_email, \
+                                        \a.analista_senha, \
+                                        \a.analista_avaliacao \
+                                        \FROM analista a WHERE a.analista_id = ?" (Only id)
+    case analistaEncontrado of
+        [row] -> return $ Just row
+        _ -> return Nothing
+
+buscarAnalistaPorEmail :: Connection -> String -> IO (Maybe Analista)
+buscarAnalistaPorEmail conn email = do
+    analistaEncontrado <- query conn "SELECT a.analista_id, \
+                                        \a.analista_nome, \
+                                        \a.analista_email, \
+                                        \a.analista_senha, \
+                                        \a.analista_avaliacao \
+                                        \FROM analista a WHERE a.analista_email = ?" (Only email)
+    case analistaEncontrado of
+        [row] -> return $ Just row
+        _ -> return Nothing
