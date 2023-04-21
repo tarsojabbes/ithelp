@@ -44,3 +44,12 @@ buscarAnalistaPorEmail conn email = do
     case analistaEncontrado of
         [row] -> return $ Just row
         _ -> return Nothing
+
+atualizarAvaliacaoAnalista :: Connection -> Int -> Int -> IO ()
+atualizarAvaliacaoAnalista conn analista_id avaliacao = do
+    [Only avaliacao_atual] <- query conn "SELECT analista_avaliacao FROM analista WHERE analista_id = ?" (Only analista_id)
+
+    let nova_avaliacao = (avaliacao_atual + avaliacao) `div` 2
+
+    execute conn "UPDATE analista SET analista_avaliacao = ? WHERE analista_id = ?" (nova_avaliacao, analista_id)
+    return ()

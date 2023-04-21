@@ -1,8 +1,8 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Controllers.AtividadeController where
 import Database.PostgreSQL.Simple
+    ( execute, query, query_, Only(Only), Connection )
 import Models.Atividade
-import System.Console.Terminfo (Point(row))
 import qualified Models.Atividade
 
 cadastrarAtividade :: Connection -> String -> String -> String -> Int -> IO()
@@ -61,3 +61,13 @@ buscarAtividadesConcluidas conn = do
                         \a.atividade_status, \
                         \a.atividade_responsavel_id \
                         \FROM quadro_atividade a WHERE a.atividade_status = 'Concluida' " :: IO [Atividade]
+
+atualizarStatusAtividade :: Connection -> Int -> String -> IO ()
+atualizarStatusAtividade conn atividade_id atividade_status = do
+    execute conn "UPDATE quadro_atividade SET atividade_status = ? WHERE atividade_id = ?" (atividade_status, atividade_id)
+    return ()
+ 
+atualizarResponsavelIdAtividade :: Connection -> Int -> Int -> IO ()
+atualizarResponsavelIdAtividade conn atividade_id responsavel_id = do
+    execute conn "UPDATE quadro_atividade SET atividade_responsavel_id = ? WHERE atividade_id = ?" (responsavel_id, atividade_id)
+    return ()

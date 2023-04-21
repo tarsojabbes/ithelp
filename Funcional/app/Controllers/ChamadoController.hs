@@ -101,3 +101,13 @@ buscarChamadoPorAnalistaId conn analista_id = do
     case chamadoEncontrado of
         [row] -> return $ Just row
         _ -> return Nothing
+
+atualizarStatusChamado :: Connection -> Int -> String -> IO ()
+atualizarStatusChamado conn id status = do
+    execute conn "UPDATE chamado SET chamado_status = ? WHERE chamado_id = ?" (status, id)
+    return ()
+
+atualizarAnalistaIdChamado :: Connection -> Int -> Int -> IO ()
+atualizarAnalistaIdChamado conn chamado_id analista_id = do
+    execute conn "UPDATE chamado SET chamado_analista_id = ? WHERE chamado_id = ?" (analista_id, chamado_id)
+    return ()

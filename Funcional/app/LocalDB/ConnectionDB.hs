@@ -1,9 +1,9 @@
 {-# LANGUAGE OverloadedStrings #-}
 module LocalDB.ConnectionDB where
 import Database.PostgreSQL.Simple
-import Controllers.AnalistaController (cadastrarAnalista, buscarAnalistaPorId, buscarAnalistaPorEmail)
+import Controllers.AnalistaController (cadastrarAnalista, buscarAnalistaPorId, buscarAnalistaPorEmail, atualizarAvaliacaoAnalista)
 import Controllers.AtividadeController (cadastrarAtividade)
-import Controllers.ChamadoController (cadastrarChamado)
+import Controllers.ChamadoController (cadastrarChamado, atualizarStatusChamado)
 import Controllers.ItemInventarioController (cadastrarItemInventario)
 
 -- Informações do banco de dados local
@@ -96,6 +96,10 @@ iniciandoDatabase = do
   createQuadroAtividade c
   analista1 <- buscarAnalistaPorId c 1
   print analista1
+  analistaTarso <- buscarAnalistaPorEmail c "tarso@gmail"
+  print analistaTarso
+  atualizarStatusChamado c 4 "Concluido"
+  atualizarAvaliacaoAnalista c 1 4
   analistaTarso <- buscarAnalistaPorEmail c "tarso@gmail"
   print analistaTarso
   return c
