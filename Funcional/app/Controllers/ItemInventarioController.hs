@@ -2,6 +2,7 @@
 module Controllers.ItemInventarioController where
 import Database.PostgreSQL.Simple
 import Models.ItemInventario
+import qualified Control.Monad
 
 cadastrarItemInventario :: Connection -> String -> String -> IO()
 cadastrarItemInventario conn nome marca = do
@@ -51,3 +52,6 @@ buscarItemInventarioPorNome conn nome = do
     case itemEncontrado of
         [row] -> return $ Just row
         _ -> return Nothing
+
+excluirItemInventario :: Connection -> Int -> IO ()
+excluirItemInventario conn item_id = Control.Monad.void $ execute conn "DELETE FROM inventario WHERE item_id = ?" (Only item_id)

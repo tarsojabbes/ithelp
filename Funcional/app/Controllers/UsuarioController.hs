@@ -2,6 +2,7 @@
 module Controllers.UsuarioController where
 import Database.PostgreSQL.Simple
 import Models.Usuario
+import qualified Control.Monad
 
 cadastrarUsuario :: Connection -> String -> String -> String -> IO()
 cadastrarUsuario conn nome email senha = do
@@ -40,3 +41,6 @@ buscarUsuarioPorEmail conn email = do
     case usuarioEncontrado of
         [row] -> return $ Just row
         _ -> return Nothing
+
+excluirUsuario :: Connection -> Int -> IO ()
+excluirUsuario conn usuario_id = Control.Monad.void $ execute conn "DELETE FROM usuario WHERE usuario_id = ?" (Only usuario_id)

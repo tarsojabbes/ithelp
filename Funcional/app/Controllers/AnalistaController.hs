@@ -2,6 +2,7 @@
 module Controllers.AnalistaController where
 import Database.PostgreSQL.Simple
 import Models.Analista
+import qualified Control.Monad
 
 cadastrarAnalista :: Connection -> String -> String -> String -> Int -> IO()
 cadastrarAnalista conn nome email senha avaliacao = do
@@ -53,3 +54,6 @@ atualizarAvaliacaoAnalista conn analista_id avaliacao = do
 
     execute conn "UPDATE analista SET analista_avaliacao = ? WHERE analista_id = ?" (nova_avaliacao, analista_id)
     return ()
+
+excluirAnalista :: Connection -> Int -> IO ()
+excluirAnalista conn analista_id = Control.Monad.void $ execute conn "DELETE FROM analista WHERE analista_id = ?" (Only analista_id)

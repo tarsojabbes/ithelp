@@ -4,6 +4,7 @@ import Database.PostgreSQL.Simple
     ( execute, query, query_, Only(Only), Connection )
 import Models.Atividade
 import qualified Models.Atividade
+import qualified Control.Monad
 
 cadastrarAtividade :: Connection -> String -> String -> String -> Int -> IO()
 cadastrarAtividade conn titulo descricao status responsavel_id = do
@@ -71,3 +72,6 @@ atualizarResponsavelIdAtividade :: Connection -> Int -> Int -> IO ()
 atualizarResponsavelIdAtividade conn atividade_id responsavel_id = do
     execute conn "UPDATE quadro_atividade SET atividade_responsavel_id = ? WHERE atividade_id = ?" (responsavel_id, atividade_id)
     return ()
+
+excluirAtividade :: Connection -> Int -> IO ()
+excluirAtividade conn atividade_id = Control.Monad.void $ execute conn "DELETE FROM quadro_atividade WHERE atividade_id = ?" (Only atividade_id)

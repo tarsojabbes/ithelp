@@ -2,6 +2,7 @@
 module Controllers.ChamadoController where
 import Database.PostgreSQL.Simple
 import Models.Chamado (Chamado)
+import qualified Control.Monad
 
 cadastrarChamado :: Connection -> String -> String -> String -> Int -> Int -> IO ()
 cadastrarChamado conn titulo descricao status criador_id analista_id = do
@@ -111,3 +112,6 @@ atualizarAnalistaIdChamado :: Connection -> Int -> Int -> IO ()
 atualizarAnalistaIdChamado conn chamado_id analista_id = do
     execute conn "UPDATE chamado SET chamado_analista_id = ? WHERE chamado_id = ?" (analista_id, chamado_id)
     return ()
+
+excluirChamado :: Connection -> Int -> IO ()
+excluirChamado conn chamado_id = Control.Monad.void $ execute conn "DELETE FROM chamado WHERE chamado_id = ?" (Only chamado_id)
