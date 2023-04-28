@@ -2,6 +2,12 @@
 module Controllers.GestorController where
 import Database.PostgreSQL.Simple
 import Models.Gestor (Gestor)
+import Controllers.ChamadoController (listarChamados, buscarChamadoPorId, buscarChamadosPorTitulo, buscarChamadosEmAndamento, buscarChamadosNaoIniciados, buscarChamadosConcluidos)
+import Controllers.ItemInventarioController (listarItensInventario)
+import Controllers.AtividadeController (listarAtividades, atualizarResponsavelIdAtividade)
+import Controllers.AnalistaController (cadastrarAnalista)
+import Controllers.UsuarioController (cadastrarUsuario)
+import Text.Printf (printf)
 
 cadastrarGestor :: Connection -> String -> String -> String -> IO()
 cadastrarGestor conn nome email senha = do
@@ -40,3 +46,47 @@ buscarGestorPorEmail conn email = do
     case gestorEncontrado of
         [row] -> return $ Just row
         _ -> return Nothing
+
+--- Coisas novas ---
+
+excluirGestor :: Connection -> Int -> IO ()
+excluirGestor conn gestor_id = Control.Monad.void $ execute conn "DELETE FROM gestor WHERE gestor_id = ?" (Only gestor_id)
+
+acessaAtividades :: Connection -> IO [Atividade]
+acessaAtividades conn = listarAtividades conn
+
+acessaInventario :: Connection -> IO [ItemInventario]
+acessaInventario conn = listarItensInventario conn
+
+acessaChamados :: Connection -> IO [Chamado]
+acessaChamados conn = listarChamados conn
+
+acessaChamadoPorId :: Connection -> Int -> IO (Maybe Chamado)
+acessaChamadoPorID conn = acessaChamadoPorID conn
+
+acessoChamadosPorTitulo :: Connection -> String -> IO [Chamado]
+acessoChamadosPorTitulo conn titulo = buscarChamadosPorTitulo conn titulo 
+
+chamadosAbertos :: Connection -> IO [Chamado]
+chamadosAbertos conn = buscarChamadosEmAndamento conn
+
+criarAnalista :: Connection -> String -> String -> String -> Int -> IO()
+criarAnalista conn nome email senha avaliacao = cadastrarAnalista conn nome email senha avaliacao 
+
+criarUsuario :: Connection -> String -> String -> String -> IO()
+criarUsuario conn nome email senha = cadastrarUsuario conn nome email senha
+
+calculaEstatisticasChamados :: Connection -> IO [String]
+calculaEstatisticasChamados conn = do 
+    printf "%d chamados não iniciados" (length buscarChamadosNaoIniciados conn) 
+    printf "%d chamados em andamento" (length buscarChamadosEmAndamento conn)
+    printf "%d chamados concluídos" (length buscarChamadosConcluidos conn)
+
+criarAtividadeParaAnalista :: Connection -> String -> String -> String -> Int -> IO()
+criarAtividadeParaAnalista conn titulo descricao status responsavel_id  = cadastrarAtividade conn titulo descricao status responsavel_id 
+
+delegarAtividadeParaAnalista :: Connection -> Int -> Int -> IO ()
+delegarAtividadeParaAnalista conn atividade_id responsavel_id = atualizarResponsavelIdAtividade conn atividade_id responsavel_id
+
+
+--historicoDeChamados (não é a mesma tabela dos chamados?)
