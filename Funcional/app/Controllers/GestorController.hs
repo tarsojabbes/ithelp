@@ -47,10 +47,10 @@ buscarGestorPorEmail conn email = do
         [row] -> return $ Just row
         _ -> return Nothing
 
---- Coisas novas ---
-
 excluirGestor :: Connection -> Int -> IO ()
 excluirGestor conn gestor_id = Control.Monad.void $ execute conn "DELETE FROM gestor WHERE gestor_id = ?" (Only gestor_id)
+
+--- Coisas novas ---
 
 acessaAtividades :: Connection -> IO [Atividade]
 acessaAtividades conn = listarAtividades conn
@@ -62,10 +62,10 @@ acessaChamados :: Connection -> IO [Chamado]
 acessaChamados conn = listarChamados conn
 
 acessaChamadoPorId :: Connection -> Int -> IO (Maybe Chamado)
-acessaChamadoPorID conn = acessaChamadoPorID conn
+acessaChamadoPorId conn = acessaChamadoPorID conn
 
-acessoChamadosPorTitulo :: Connection -> String -> IO [Chamado]
-acessoChamadosPorTitulo conn titulo = buscarChamadosPorTitulo conn titulo 
+acessaChamadoPorTitulo :: Connection -> String -> IO [Chamado]
+acessaChamadoPorTitulo conn titulo = buscarChamadosPorTitulo conn titulo 
 
 chamadosAbertos :: Connection -> IO [Chamado]
 chamadosAbertos conn = buscarChamadosEmAndamento conn
@@ -78,9 +78,9 @@ criarUsuario conn nome email senha = cadastrarUsuario conn nome email senha
 
 calculaEstatisticasChamados :: Connection -> IO [String]
 calculaEstatisticasChamados conn = do 
-    printf "%d chamados não iniciados" (length buscarChamadosNaoIniciados conn) 
-    printf "%d chamados em andamento" (length buscarChamadosEmAndamento conn)
-    printf "%d chamados concluídos" (length buscarChamadosConcluidos conn)
+    printf "%.2f chamados não iniciados" ((length buscarChamadosNaoIniciados conn) / (length acessaChamados conn))
+    printf "%.2f chamados em andamento" ((length buscarChamadosEmAndamento conn) / (length acessaChamados conn))
+    printf "%.2f chamados concluídos" ((length buscarChamadosConcluidos conn) / (length acessaChamados conn))
 
 criarAtividadeParaAnalista :: Connection -> String -> String -> String -> Int -> IO()
 criarAtividadeParaAnalista conn titulo descricao status responsavel_id  = cadastrarAtividade conn titulo descricao status responsavel_id 
@@ -88,5 +88,5 @@ criarAtividadeParaAnalista conn titulo descricao status responsavel_id  = cadast
 delegarAtividadeParaAnalista :: Connection -> Int -> Int -> IO ()
 delegarAtividadeParaAnalista conn atividade_id responsavel_id = atualizarResponsavelIdAtividade conn atividade_id responsavel_id
 
-
---historicoDeChamados (não é a mesma tabela dos chamados?)
+historicoDeChamados :: Connection -> IO [Chamado]
+historicoDeChamados conn = listarChamados conn
