@@ -94,12 +94,4 @@ iniciandoDatabase = do
   createInventario c
   createChamado c
   createQuadroAtividade c
-  analista1 <- buscarAnalistaPorId c 1
-  print analista1
-  analistaTarso <- buscarAnalistaPorEmail c "tarso@gmail"
-  print analistaTarso
-  atualizarStatusChamado c 4 "Concluido"
-  atualizarAvaliacaoAnalista c 1 4
-  analistaTarso <- buscarAnalistaPorEmail c "tarso@gmail"
-  print analistaTarso
   return c
