@@ -2,8 +2,7 @@
 module Functions.GestrorFunctions where
 import Database.PostgreSQL.Simple
 import Controllers.ChamadoController
-import Controllers.GestorController (acessaAtividades,acessaInventario,acessaChamados,acessaChamadoPorId,acessaChamadoPorTitulo,chamadosAbertos,criarAnalista,
-criarUsuario,calculaEstatisticasChamados,criarAtividadeParaAnalista,delegarAtividadeParaAnalista,historicoDeChamados)
+import Controllers.GestorController (acessaAtividades,acessaInventario,acessaChamados,acessaChamadoPorId,acessaChamadoPorTitulo,chamadosAbertos,criarAnalista,criarUsuario,calculaEstatisticasChamados,criarAtividadeParaAnalista,delegarAtividadeParaAnalista,historicoDeChamados)
 
 funcoesGestor :: Connection -> IO ()
 funcoesGestor conn = do
@@ -31,8 +30,50 @@ lidaComFuncaoEscolhida conn funcao = do
         exibeMenuOpcoesGestorChamado
         funcao_chamado <- getLine
         lidaComOpcaoChamado conn funcao_chamado
+    else if funcao == "2" then acessaInventario
+    else if funcao == "3" then acessaAtividades
+
+    else if funcao == "4" then do
+        putStrLn "Qual o titulo da atividade a ser criada?"
+        atividade_titulo <- getLine
+        putStrLn "Qual a descrição da atividade?"
+        atividade_descricao <- getLine
+        putStrLn "Quem é o responsável pela atividade?"
+        atividade_responsavel_id <- readLn :: IO Int
+        criarAtividadeParaAnalista conn atividade_titulo atividade_descricao "Nao iniciada" atividade_responsavel_id
+        putStrLn "---Atividade criada com sucesso---"
+
+    else if funcao == "5" then do
+        putStrLn "Qual o ID da atividade a ser delegada?"
+        atividade_id <- readLn :: IO Int
+        putStrLn "Qual o ID do novo responsável pela atividade?"
+        responsavel_id <- readLn :: IO Int
+        delegarAtividadeParaAnalista conn atividade_id responsavel_id
+        putStrLn "---Atividade repassada com sucesso---"
+
+    else if funcao == "6" then do
+        putStrLn "Insira o nome do novo usuário:"
+        usuario_nome <- getLine
+        putStrLn "Cadastre o email do novo usuário:"
+        usuario_email <- getLine
+        putStrLn "Cadastre uma senha para o novo usuário:"
+        usuario_senha <- getLine
+        criarUsuario conn usuario_nome usuario_email usuario_senha
+        putStrLn "---Usuário cadastrado com sucesso---"
+
+    else if funcao == "7" then do
+        putStrLn "Insira o nome do novo analista:"
+        analista_nome <- getLine
+        putStrLn "Cadastre o email do novo analista:"
+        analista_email <- getLine
+        putStrLn "Cadastre uma senha para o novo analista:"
+        analista_senha <- getLine
+        criarAnalista conn analista_nome analista_email analista_senha 5
+        putStrLn "---Analista cadastrado com sucesso---"
+
     else do
-        print ""
+        printf "A função escolhida não existe. Por favor, selecione alguma das opções abaixo\n"
+        funcoesGestor conn
 
 exibeMenuOpcoesGestorChamado :: IO ()
 exibeMenuOpcoesGestorChamado = do
@@ -59,4 +100,5 @@ lidaComOpcaoChamado conn funcao_chamado = do
         chamado_titulo <- getLine
         acessaChamadoPorTitulo conn chamado_titulo
     else do
-            print ""
+            printf "Você não selecionou uma opção válida. Selecione alguma das opções abaixo\n"
+            lidaComFuncaoEscolhida conn "1"
