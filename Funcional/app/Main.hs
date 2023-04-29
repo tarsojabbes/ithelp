@@ -67,9 +67,7 @@ loginGestor conn = do
 
 main :: IO ()
 main = do
-    putStrLn "Criando base de dados..."
     conn <- iniciandoDatabase
-    putStrLn "Base de dados criada"
     exibeMenuLogin
     perfil <- getLine
     if perfil == "a" || perfil == "A" then do
