@@ -11,6 +11,8 @@ import qualified Data.Maybe
 import Control.Exception (catch)
 import Controllers.ChamadoController
 import Models.Chamado
+import Controllers.ItemInventarioController
+import Models.ItemInventario
 
 funcoesAnalista :: Connection -> IO ()
 funcoesAnalista conn = do
@@ -35,6 +37,10 @@ lidaComFuncaoEscolhida conn funcao = do
         exibeMenuOpcoesAnalistaAtividade
         funcao_atividade <- getLine
         lidaComOpcaoAtividade conn funcao_atividade
+    else if funcao == "2" then do
+        exibeMenuOpcoesAnalistaInventario
+        funcao_inventario <- getLine
+        lidaComOpcaoInventario conn funcao_inventario
     else if funcao == "3" then do
         exibeMenuOpcoesAnalistaChamado
         funcaoChamado <- getLine
@@ -225,3 +231,89 @@ formataChamado conn chamado = do
     case responsavel of
         Just analista -> printf "Responsavel: %s\n" (analista_nome analista)
         Nothing -> printf "Não há analista responsável por essa atividade"
+
+-- funcões do Inventario
+exibeMenuOpcoesAnalistaInventario :: IO ()
+exibeMenuOpcoesAnalistaInventario = do 
+    mapM_ putStrLn ["---FUNÇÕES PARA QUADRO DE ITENS DO INVENTÁRIO---",
+                    "1 - Criar novo item do inventário",
+                    "2 - Listar os itens do inventário",
+                    "3 - Buscar item do inventário por ID",                
+                    "4 - Buscar item do inventário por Nome",                
+                    "5 - Buscar item do inventário por Marca",                
+                    "6 - Atualizar um item do inventário",                
+                    "7 - Excluir um item do inventário"]
+
+lidaComOpcaoInventario :: Connection -> String -> IO ()
+lidaComOpcaoInventario conn funcao_inventario = do
+    case funcao_inventario of
+        "1" -> do
+            putStrLn "Qual o nome do item a ser adicionado?"
+            itemNome <- getLine
+            putStrLn "Qual a marca do item a ser adicionado?"
+            itemMarca <- getLine
+            cadastrarItemInventario conn itemNome itemMarca 
+
+        "2" -> do
+            itens <- listarItensInventario conn
+            formataListaItensInventario conn itens
+
+        "3" -> do
+            putStrLn "Qual o ID do item que você deseja buscar?"
+            itemId <- readLn :: IO Int
+            itemEncontrado <- buscarItemInventarioPorId conn itemId
+            case itemEncontrado of
+                Just item -> formataItemInventario conn item
+                Nothing -> printf "Item de Inventario com o ID informado não foi encontrado\n"
+
+        "4" -> do
+            putStrLn "Qual o nome do item que você deseja buscar?"
+            itemNome <- getLine
+            itemEncontrado <- buscarItemInventarioPorNome conn itemNome
+            case itemEncontrado of
+                Just item -> formataListaItensInventario conn item
+                Nothing -> printf "Item de Inventario com o nome informado não foi encontrado\n"
+
+        "5" -> do
+            putStrLn "Qual a marca do item que você deseja buscar?"
+            itemMarca <- getLine
+            itemEncontrado <- buscarItemInventarioPorMarca conn itemMarca
+            case itemEncontrado of
+                Just item -> formataListaItensInventario conn item
+                Nothing -> printf "Item de Inventario com a marca informada não foi encontrado\n"
+
+        "6" -> do
+            putStrLn "Qual o ID do item que você deseja atualizar?"
+            itemId <- readLn :: IO Int
+            putStrLn "Qual o novo nome do item?"
+            itemNome <- getLine
+            putStrLn "Qual a nova marca do item?"
+            itemMarca <- getLine
+            itemEncontrado <- buscarItemInventarioPorId conn itemId
+            case itemEncontrado of
+                Just item -> atualizarItemInventario conn itemId itemNome itemMarca
+                Nothing -> printf "Item de Inventario com o ID informado não foi encontrado\n"
+
+        "7" -> do
+            putStrLn "Qual o ID do Item de Inventário que você deseja excluir?"
+            itemId <- readLn :: IO Int
+            excluirItemInventario conn itemId
+
+        _ -> do
+            printf "Você não selecionou uma opção válida. Selecione alguma das opções abaixo\n"
+            lidaComFuncaoEscolhida conn "2"
+
+formataListaItensInventario :: Connection -> [ItemInventario] -> IO ()
+formataListaItensInventario _ [] = putStrLn ""
+formataListaItensInventario conn (x:xs) = do
+    formataItemInventario conn x
+    formataListaItensInventario conn xs
+
+formataItemInventario :: Connection -> ItemInventario -> IO ()
+formataItemInventario conn itemInventario = do
+    printf "\n------------------------\n"
+    printf "Nome: %s\nMarca: %s\nData De Aquisição: %s\n" 
+            (item_nome itemInventario)
+            (item_marca itemInventario)
+            (show (item_data_aquisicao itemInventario))
+    
