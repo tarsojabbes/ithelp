@@ -52,29 +52,29 @@ excluirGestor conn gestor_id = Control.Monad.void $ execute conn "DELETE FROM ge
 
 --- Coisas novas ---
 
-acessaAtividades :: Connection -> IO [Atividade]
-acessaAtividades conn = listarAtividades conn
+-- acessaAtividades :: Connection -> IO [Atividade]
+-- acessaAtividades conn = listarAtividades conn
 
-acessaInventario :: Connection -> IO [ItemInventario]
-acessaInventario conn = listarItensInventario conn
+-- acessaInventario :: Connection -> IO [ItemInventario]
+-- acessaInventario conn = listarItensInventario conn
 
-acessaChamados :: Connection -> IO [Chamado]
-acessaChamados conn = listarChamados conn
+-- acessaChamados :: Connection -> IO [Chamado]
+-- acessaChamados conn = listarChamados conn
 
-acessaChamadoPorId :: Connection -> Int -> IO (Maybe Chamado)
-acessaChamadoPorId conn = acessaChamadoPorID conn
+-- acessaChamadoPorId :: Connection -> Int -> IO (Maybe Chamado)
+-- acessaChamadoPorId conn = acessaChamadoPorID conn
 
-acessaChamadoPorTitulo :: Connection -> String -> IO [Chamado]
-acessaChamadoPorTitulo conn titulo = buscarChamadosPorTitulo conn titulo 
+-- acessaChamadoPorTitulo :: Connection -> String -> IO [Chamado]
+-- acessaChamadoPorTitulo conn titulo = buscarChamadosPorTitulo conn titulo 
 
-chamadosAbertos :: Connection -> IO [Chamado]
-chamadosAbertos conn = buscarChamadosEmAndamento conn
+-- chamadosAbertos :: Connection -> IO [Chamado]
+-- chamadosAbertos conn = buscarChamadosEmAndamento conn
 
-criarAnalista :: Connection -> String -> String -> String -> Int -> IO()
-criarAnalista conn nome email senha avaliacao = cadastrarAnalista conn nome email senha avaliacao 
+-- criarAnalista :: Connection -> String -> String -> String -> Int -> IO()
+-- criarAnalista conn nome email senha avaliacao = cadastrarAnalista conn nome email senha avaliacao 
 
-criarUsuario :: Connection -> String -> String -> String -> IO()
-criarUsuario conn nome email senha = cadastrarUsuario conn nome email senha
+-- criarUsuario :: Connection -> String -> String -> String -> IO()
+-- criarUsuario conn nome email senha = cadastrarUsuario conn nome email senha
 
 calculaEstatisticasChamados :: Connection -> IO [String]
 calculaEstatisticasChamados conn = do 
@@ -82,11 +82,11 @@ calculaEstatisticasChamados conn = do
     printf "%.2f chamados em andamento" ((length buscarChamadosEmAndamento conn) / (length acessaChamados conn))
     printf "%.2f chamados concluídos" ((length buscarChamadosConcluidos conn) / (length acessaChamados conn))
 
-criarAtividadeParaAnalista :: Connection -> String -> String -> String -> Int -> IO()
-criarAtividadeParaAnalista conn titulo descricao status responsavel_id  = cadastrarAtividade conn titulo descricao status responsavel_id 
+-- criarAtividadeParaAnalista :: Connection -> String -> String -> String -> Int -> IO()
+-- criarAtividadeParaAnalista conn titulo descricao status responsavel_id  = cadastrarAtividade conn titulo descricao status responsavel_id 
 
-delegarAtividadeParaAnalista :: Connection -> Int -> Int -> IO ()
-delegarAtividadeParaAnalista conn atividade_id responsavel_id = atualizarResponsavelIdAtividade conn atividade_id responsavel_id
+-- delegarAtividadeParaAnalista :: Connection -> Int -> Int -> IO ()
+-- delegarAtividadeParaAnalista conn atividade_id responsavel_id = atualizarResponsavelIdAtividade conn atividade_id responsavel_id
 
-historicoDeChamados :: Connection -> IO [Chamado]
-historicoDeChamados conn = listarChamados conn
+-- historicoDeChamados :: Connection -> IO [Chamado]
+-- historicoDeChamados conn = listarChamados conn
