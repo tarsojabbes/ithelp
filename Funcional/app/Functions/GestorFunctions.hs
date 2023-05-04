@@ -30,8 +30,8 @@ lidaComFuncaoEscolhida conn funcao = do
         exibeMenuOpcoesGestorChamado
         funcao_chamado <- getLine
         lidaComOpcaoChamado conn funcao_chamado
-    else if funcao == "2" then acessaInventario
-    else if funcao == "3" then acessaAtividades
+    else if funcao == "2" then acessaInventario conn
+    else if funcao == "3" then acessaAtividades conn
 
     else if funcao == "4" then do
         putStrLn "Qual o titulo da atividade a ser criada?"
@@ -88,9 +88,9 @@ exibeMenuOpcoesGestorChamado = do
 
 lidaComOpcaoChamado :: Connection -> String -> IO ()
 lidaComOpcaoChamado conn funcao_chamado = do
-    if funcao_chamado == "1" then acessaChamados
-    else if  funcao_chamado == "2" then chamadosAbertos
-    else if  funcao_chamado == "3" then calculaEstatisticasChamados
+    if funcao_chamado == "1" then acessaChamados conn
+    else if  funcao_chamado == "2" then chamadosAbertos conn
+    else if  funcao_chamado == "3" then calculaEstatisticasChamados conn
     else if  funcao_chamado == "4" then do
         putStrLn "Qual o ID do chamado a ser acessado?"
         chamado_id <- getLine
