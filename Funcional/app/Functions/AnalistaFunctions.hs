@@ -45,6 +45,8 @@ lidaComFuncaoEscolhida conn funcao = do
         exibeMenuOpcoesAnalistaChamado
         funcaoChamado <- getLine
         lidaComOpcaoChamado conn funcaoChamado
+    else if funcao == "4" then do
+        exibeEstatisticasProprias conn 
     else do
         printf "A função escolhida não existe. Por favor, selecione alguma das opções abaixo\n"
         funcoesAnalista conn
@@ -317,3 +319,45 @@ formataItemInventario conn itemInventario = do
             (item_marca itemInventario)
             (show (item_data_aquisicao itemInventario))
     
+--funções da exibição de estatísticas próprias
+
+exibeEstatisticasProprias :: Connection -> IO ()
+exibeEstatisticasProprias conn = do
+
+        putStrLn "Qual o seu ID?"
+        analista_id <- readLn :: IO Int
+
+        analistaEncontrado <- buscarAnalistaPorId conn analista_id
+        case analistaEncontrado of
+                Just analista -> formataAvaliacao conn analista
+                Nothing -> printf "Analista com o ID informado não foi encontrado\n"
+        
+        printf "\n------------------------\n"
+        printf "Chamados Do Analista"
+        printf "\n------------------------\n"
+
+        chamadosEncontrados <- buscarChamadoPorAnalistaId conn analista_id
+        case chamadosEncontrados of
+                Just chamados -> formataListaDeChamados conn chamados
+                Nothing -> printf "Chamados para o analista informado não foram encontrados\n"
+
+
+formataAvaliacao :: Connection -> Analista -> IO ()
+formataAvaliacao conn analista = do
+    printf "\n------------------------\n"
+    printf "Avaliação dos usuários: %i" (analista_avaliacao analista)
+    printf "\n------------------------\n"
+
+
+formataListaDeChamados :: Connection -> [Chamado] -> IO ()
+formataListaDeChamados _ [] = putStrLn ""
+formataListaDeChamados conn (x:xs) = do
+    formataChamadoDoAnalista conn x
+    formataListaDeChamados conn xs
+
+formataChamadoDoAnalista :: Connection -> Chamado -> IO ()
+formataChamadoDoAnalista conn chamado = do
+
+    printf "\nChamado: %s\n" (chamado_titulo chamado)
+    printf "Descrição: %s\n" (chamado_descricao chamado)
+    printf "Status: %s\n" (chamado_status chamado)
