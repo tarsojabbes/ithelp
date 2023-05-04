@@ -90,18 +90,18 @@ buscarChamadoPorCriadorId conn criador_id = do
         [row] -> return $ Just row
         _ -> return Nothing
 
-buscarChamadoPorAnalistaId :: Connection -> Int -> IO (Maybe Chamado)
+buscarChamadoPorAnalistaId :: Connection -> Int -> IO (Maybe [Chamado])
 buscarChamadoPorAnalistaId conn analista_id = do
-    chamadoEncontrado <- query conn "SELECT c.chamado_id, \
+    chamadosEncontrados <- query conn "SELECT c.chamado_id, \
                         \c.chamado_titulo, \
                         \c.chamado_descricao, \
                         \c.chamado_status, \
                         \c.chamado_criador_id, \
                         \c.chamado_analista_id \
                         \FROM chamado c WHERE c.chamado_analista_id = ?" (Only analista_id)
-    case chamadoEncontrado of
-        [row] -> return $ Just row
-        _ -> return Nothing
+    case chamadosEncontrados of
+        [] -> return Nothing
+        _ -> return $ Just chamadosEncontrados
 
 atualizarStatusChamado :: Connection -> Int -> String -> IO ()
 atualizarStatusChamado conn id status = do
