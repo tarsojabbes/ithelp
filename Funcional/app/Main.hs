@@ -15,6 +15,7 @@ import Models.Usuario
 import Models.Atividade (Atividade(atividade_responsavel_id, atividade_titulo, atividade_descricao))
 import Text.Printf
 import Functions.AnalistaFunctions
+import Functions.GestorFunctions
 
 exibeMenuLogin :: IO ()
 exibeMenuLogin = do
@@ -41,7 +42,7 @@ loginAnalista conn = do
                 return Nothing
         Nothing -> do
             print "Analista não encontrado"
-            return Nothing
+
                         
 
 main :: IO ()
@@ -51,9 +52,7 @@ main = do
     perfil <- getLine
     if perfil == "a" || perfil == "A" then do
         loginEfetuado <- loginAnalista conn
-        case loginEfetuado of
-            Just analistaEncontrado -> funcoesAnalista conn analistaEncontrado
-            Nothing -> putStrLn ""
+
     else do
         print "Nada"
     
