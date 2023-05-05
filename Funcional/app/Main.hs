@@ -23,7 +23,7 @@ exibeMenuLogin = do
     putStrLn "[A]nalista"
     putStrLn "[U]suário"
 
-loginAnalista :: Connection -> IO Bool
+loginAnalista :: Connection -> IO (Maybe Analista)
 loginAnalista conn = do
     putStrLn "Informe o seu email:"
     email <- getLine
@@ -35,13 +35,13 @@ loginAnalista conn = do
             if analista_senha analistaEncontrado == senha
             then do
                 printf "Seja bem vindo, %s, caso requisitado informe seu ID: %d" (analista_nome analistaEncontrado) (analista_id analistaEncontrado)
-                return True
+                return (Just analistaEncontrado)
             else do
                 print "Senha incorreta"
-                return False
+                return Nothing
         Nothing -> do
             print "Analista não encontrado"
-            return False
+            return Nothing
                         
 
 main :: IO ()
@@ -51,7 +51,9 @@ main = do
     perfil <- getLine
     if perfil == "a" || perfil == "A" then do
         loginEfetuado <- loginAnalista conn
-        if loginEfetuado then funcoesAnalista conn else do putStrLn ""
+        case loginEfetuado of
+            Just analistaEncontrado -> funcoesAnalista conn analistaEncontrado
+            Nothing -> putStrLn ""
     else do
         print "Nada"
     
