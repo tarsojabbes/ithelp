@@ -3,12 +3,13 @@
 module Functions.UsuarioFunctions where
 import Database.PostgreSQL.Simple
 import Controllers.ChamadoController (cadastrarChamado, buscarChamadoPorCriadorId)
-import Controllers.AnalistaController (atualizarAvaliacaoAnalista)
+import Controllers.AnalistaController (atualizarAvaliacaoAnalista, buscarAnalistaPorEmail)
 import Models.Usuario
 import Models.Chamado
 import qualified Control.Monad
 import Text.Printf
 import Functions.AnalistaFunctions (formataListaDeChamados)
+import Models.Analista (analista_id)
 
 funcoesUsuario :: Connection -> Usuario -> IO ()
 funcoesUsuario conn usuario = do
@@ -38,6 +39,7 @@ lidaComFuncaoEscolhida conn usuario funcao
         putStrLn "2 - Cancela"
         confirmacao <- getLine
         criaChamado conn usuario confirmacao titulo_chamado descricao_chamado
+        funcoesUsuario conn usuario
 
     | funcao == "2" = do
         let id_usuario = usuario_id usuario
@@ -45,6 +47,7 @@ lidaComFuncaoEscolhida conn usuario funcao
         case chamadosEncontrados of
                 Just chamados -> formataListaDeChamados conn chamados
                 Nothing -> printf "Chamados para o usuário informado não foram encontrados\n"
+        funcoesUsuario conn usuario
 
     | funcao == "3" = do
         putStrLn "Qual o ID do analista?"
@@ -56,6 +59,7 @@ lidaComFuncaoEscolhida conn usuario funcao
         putStrLn "2 - Cancela"
         confirmacao <- getLine
         avaliaAnalista conn id_analista avaliacao confirmacao
+        funcoesUsuario conn usuario
 
     | otherwise = do
         printf "A função escolhida não existe. Por favor, selecione alguma das opções abaixo\n"
@@ -66,9 +70,14 @@ criaChamado conn usuario confirmacao titulo_chamado descricao_chamado = do
     if confirmacao == "1" then do
         let status_chamado = "Nao iniciado"
         let id_usuario = usuario_id usuario
-        let id_analista = 1
-        cadastrarChamado conn titulo_chamado descricao_chamado status_chamado id_usuario id_analista
-        putStrLn "---Chamado criado com sucesso---"
+        analista_padrao <- buscarAnalistaPorEmail conn "analista@email.com"
+        let analista = analista_padrao
+        case analista_padrao of 
+            Just analista -> do
+                let id_analista = analista_id analista
+                cadastrarChamado conn titulo_chamado descricao_chamado status_chamado id_usuario id_analista
+                putStrLn "---Chamado criado com sucesso---"
+            _ -> putStrLn "---Analista padrão não encontrado"
     
     else do
         putStrLn "---Criação do chamado cancelada---"

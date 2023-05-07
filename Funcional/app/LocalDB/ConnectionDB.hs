@@ -5,6 +5,7 @@ import Controllers.AnalistaController (cadastrarAnalista, buscarAnalistaPorId, b
 import Controllers.AtividadeController (cadastrarAtividade)
 import Controllers.ChamadoController (cadastrarChamado, atualizarStatusChamado)
 import Controllers.ItemInventarioController (cadastrarItemInventario)
+import Controllers.GestorController (buscarGestorPorEmail, cadastrarGestor)
 
 -- Informações do banco de dados local
 localDB :: ConnectInfo
@@ -94,4 +95,15 @@ iniciandoDatabase = do
   createInventario c
   createChamado c
   createQuadroAtividade c
+
+  gestor_padrao <- buscarGestorPorEmail c "gestor@email.com"
+  case gestor_padrao of
+    Just gestor -> putStrLn ""
+    Nothing -> cadastrarGestor c "Gestor" "gestor@email.com" "gestor"
+
+  analista_padrao <- buscarAnalistaPorEmail c "analista@email.com"
+  case analista_padrao of
+    Just analista -> putStrLn ""
+    Nothing -> cadastrarAnalista c "Analista" "analista@email.com" "analista" 5
+
   return c

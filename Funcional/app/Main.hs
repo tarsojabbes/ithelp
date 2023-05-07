@@ -84,24 +84,33 @@ loginUsuario conn = do
         Nothing -> do
             putStrLn "Usuário não encontrado"
             return Nothing
-                        
-main :: IO ()
-main = do
-    conn <- iniciandoDatabase
+
+app :: Connection -> IO ()
+app conn = do
     exibeMenuLogin
     perfil <- getLine
     if perfil == "a" || perfil == "A" then do
         loginEfetuado <- loginAnalista conn
         case loginEfetuado of
             Just analistaEncontrado -> funcoesAnalista conn analistaEncontrado
-            Nothing -> putStrLn ""
+            Nothing -> do
+                app conn
     else if perfil == "g" || perfil == "G" then do
         loginEfetuado <- loginGestor conn
-        if loginEfetuado then funcoesGestor conn else do putStrLn ""
+        if loginEfetuado then funcoesGestor conn else do app conn
     else if perfil == "u" || perfil == "U" then do
         loginEfetuado <- loginUsuario conn
         case loginEfetuado of
             Just usuarioEncontrado -> funcoesUsuario conn usuarioEncontrado
-            Nothing -> putStrLn ""
+            Nothing -> do
+                app conn
     else do
-        putStrLn "Nada"
+        putStrLn "O perfil selecionado não existe, por favor, selecione um perfil válido"
+        app conn
+                        
+main :: IO ()
+main = do
+    conn <- iniciandoDatabase
+    app conn
+    
+

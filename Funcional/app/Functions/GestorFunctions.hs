@@ -34,9 +34,11 @@ lidaComFuncaoEscolhida conn funcao = do
         exibeMenuOpcoesGestorChamado
         funcao_chamado <- getLine
         lidaComOpcaoChamado conn funcao_chamado
+
     else if funcao == "2" then do
         itens <- listarItensInventario conn
         formataListaItensInventario conn itens
+
     else if funcao == "3" then do
         atividades <- listarAtividades conn
         formataListaAtividade conn atividades
@@ -81,7 +83,8 @@ lidaComFuncaoEscolhida conn funcao = do
 
     else do
         putStrLn "A função escolhida não existe. Por favor, selecione alguma das opções abaixo\n"
-        funcoesGestor conn
+
+    funcoesGestor conn
 
 exibeMenuOpcoesGestorChamado :: IO ()
 exibeMenuOpcoesGestorChamado = do
@@ -99,11 +102,14 @@ lidaComOpcaoChamado conn funcao_chamado = do
     if funcao_chamado == "1" then do
         chamados <- listarChamados conn
         formataListaChamado conn chamados
+
     else if  funcao_chamado == "2" then do
         chamados_abertos <- buscarChamadosEmAndamento conn
         formataListaChamado conn chamados_abertos
+
     else if  funcao_chamado == "3" then do
         calculaEstatisticasChamados conn
+
     else if  funcao_chamado == "4" then do
         putStrLn "Qual o ID do chamado a ser acessado?"
         chamado_id <- readLn :: IO Int
@@ -119,6 +125,8 @@ lidaComOpcaoChamado conn funcao_chamado = do
         case chamado_encontrado of
             Just chamado -> formataListaChamado conn chamado
             Nothing -> putStrLn "Chamado com título informado não foi encontrado"
+
     else do
             putStrLn "Você não selecionou uma opção válida. Selecione alguma das opções abaixo\n"
-            lidaComFuncaoEscolhida conn "1"
+            
+    funcoesGestor conn
