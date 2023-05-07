@@ -20,7 +20,7 @@ exibeMenuFuncoesUsuario :: IO ()
 exibeMenuFuncoesUsuario = do
     putStrLn "Enquanto usuário, você pode executar as seguintes funções:"
     putStrLn "------FUNÇÕES PARA USUÁRIO----"
-    putStrLn "1 - Criar chamados"
+    putStrLn "1 - Criar chamado"
     putStrLn "2 - Acompanhar chamados que você criou"
     putStrLn "3 - Avaliar analista responsável pelos seus chamados"
     putStrLn "------------------------------------------"
@@ -67,7 +67,7 @@ criaChamado conn usuario confirmacao titulo_chamado descricao_chamado = do
         let status_chamado = "Nao iniciado"
         let id_usuario = usuario_id usuario
         let id_analista = 1
-        cadastrarChamado conn titulo_chamado descricao_chamado status_chamado id_usuario    id_analista
+        cadastrarChamado conn titulo_chamado descricao_chamado status_chamado id_usuario id_analista
         putStrLn "---Chamado criado com sucesso---"
     
     else do

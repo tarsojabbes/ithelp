@@ -89,10 +89,10 @@ calculaEstatisticasChamados conn = do
     let qtdChamadosEmAndamento = length chamadosEmAndamento
     let qtdChamadosConcluidos = length chamadosConcluidos
 
-    printf "%d chamados totais" qtdChamadosTotais
-    printf "%d chamados não iniciados" qtdChamadosNaoIniciados
-    printf "%d chamados em andamento" qtdChamadosEmAndamento
-    printf "%d chamados concluídos" qtdChamadosConcluidos
+    printf "%d chamados totais\n" qtdChamadosTotais
+    printf "%d chamados não iniciados\n" qtdChamadosNaoIniciados
+    printf "%d chamados em andamento\n" qtdChamadosEmAndamento
+    printf "%d chamados concluídos\n" qtdChamadosConcluidos
 
 criarAtividadeParaAnalista :: Connection -> String -> String -> String -> Int -> IO()
 criarAtividadeParaAnalista = cadastrarAtividade

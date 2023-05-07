@@ -139,7 +139,7 @@ formataAtividade conn atividade = do
     responsavel <- buscarAnalistaPorId conn (atividade_responsavel_id atividade)
     case responsavel of
         Just analista -> printf "Responsavel: %s\n" (analista_nome analista)
-        Nothing -> printf "Nao ha analista responsavel por essa atividade"
+        Nothing -> printf "Nao há analista responsável por essa atividade\n"
 
 -- funcões do Inventario
 exibeMenuOpcoesAnalistaInventario :: IO ()
@@ -325,7 +325,7 @@ formataChamado conn chamado = do
     responsavel <- buscarAnalistaPorId conn (chamado_analista_id chamado)
     case responsavel of
         Just analista -> printf "Responsavel: %s\n" (analista_nome analista)
-        Nothing -> printf "Não há analista responsável por essa atividade"
+        Nothing -> printf "Não há analista responsável por essa atividade\n"
     
 --funções da exibição de estatísticas próprias
 exibeEstatisticasProprias :: Connection -> Analista -> IO ()

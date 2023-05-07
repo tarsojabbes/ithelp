@@ -36,7 +36,7 @@ loginAnalista conn = do
         Just analistaEncontrado ->
             if analista_senha analistaEncontrado == senha
             then do
-                printf "Seja bem vindo, %s, caso requisitado informe seu ID: %d" (analista_nome analistaEncontrado) (analista_id analistaEncontrado)
+                printf "Seja bem vindo, %s, caso requisitado informe seu ID: %d\n" (analista_nome analistaEncontrado) (analista_id analistaEncontrado)
                 return (Just analistaEncontrado)
             else do
                 putStrLn "Senha incorreta"
@@ -56,7 +56,7 @@ loginGestor conn = do
         Just gestorEncontrado ->
             if gestor_senha gestorEncontrado == senha
             then do
-                printf "Seja bem vindo, %s, caso requisitado informe seu ID: %d" (gestor_nome gestorEncontrado) (gestor_id gestorEncontrado)
+                printf "Seja bem vindo, %s, caso requisitado informe seu ID: %d\n" (gestor_nome gestorEncontrado) (gestor_id gestorEncontrado)
                 return True
             else do
                 putStrLn "Senha incorreta"
@@ -76,7 +76,7 @@ loginUsuario conn = do
         Just usuarioEncontrado ->
             if usuario_senha usuarioEncontrado == senha
             then do
-                printf "Seja bem vindo, %s, caso requisitado informe seu ID: %d" (usuario_nome usuarioEncontrado) (usuario_id usuarioEncontrado)
+                printf "Seja bem vindo, %s, caso requisitado informe seu ID: %d\n" (usuario_nome usuarioEncontrado) (usuario_id usuarioEncontrado)
                 return (Just usuarioEncontrado)
             else do
                 putStrLn "Senha incorreta"
