@@ -8,6 +8,7 @@ import Models.Usuario
 import Models.Chamado
 import qualified Control.Monad
 import Text.Printf
+import Functions.AnalistaFunctions (formataListaDeChamados)
 
 funcoesUsuario :: Connection -> Usuario -> IO ()
 funcoesUsuario conn usuario = do
@@ -29,9 +30,9 @@ lidaComFuncaoEscolhida :: Connection -> Usuario -> String -> IO ()
 lidaComFuncaoEscolhida conn usuario funcao
     | funcao == "1" = do
         putStrLn "Qual o título do chamado?"
-        titulo_chamado <- readLn :: IO String
+        titulo_chamado <- getLine
         putStrLn "Qual a descrição do chamado?"
-        descricao_chamado <- readLn :: IO String
+        descricao_chamado <- getLine
         putStrLn "------CONFIRMA CRIAÇÃO DO CHAMADO?----"
         putStrLn "1 - Confirma"
         putStrLn "2 - Cancela"
@@ -40,8 +41,10 @@ lidaComFuncaoEscolhida conn usuario funcao
 
     | funcao == "2" = do
         let id_usuario = usuario_id usuario
-        buscarChamadoPorCriadorId conn id_usuario
-        putStrLn ""
+        chamadosEncontrados <- buscarChamadoPorCriadorId conn id_usuario
+        case chamadosEncontrados of
+                Just chamados -> formataListaDeChamados conn chamados
+                Nothing -> printf "Chamados para o usuário informado não foram encontrados\n"
 
     | funcao == "3" = do
         putStrLn "Qual o ID do analista?"
