@@ -16,6 +16,7 @@ import Models.Atividade (Atividade(atividade_responsavel_id, atividade_titulo, a
 import Text.Printf
 import Functions.AnalistaFunctions
 import Functions.GestorFunctions
+import Functions.UsuarioFunctions
 
 exibeMenuLogin :: IO ()
 exibeMenuLogin = do
@@ -63,8 +64,27 @@ loginGestor conn = do
         Nothing -> do
             print "Gestor não encontrado"
             return False
-                        
 
+loginUsuario :: Connection -> IO (Maybe Usuario)
+loginUsuario conn = do
+    putStrLn "Informe o seu email:"
+    email <- getLine
+    putStrLn "Informe a sua senha:"
+    senha <- getLine
+    maybeUsuarioEncontrado <- buscarUsuarioPorEmail conn email
+    case maybeUsuarioEncontrado of
+        Just usuarioEncontrado ->
+            if usuario_senha usuarioEncontrado == senha
+            then do
+                printf "Seja bem vindo, %s, caso requisitado informe seu ID: %d" (usuario_nome usuarioEncontrado) (usuario_id usuarioEncontrado)
+                return (Just usuarioEncontrado)
+            else do
+                print "Senha incorreta"
+                return Nothing
+        Nothing -> do
+            print "Usuário não encontrado"
+            return Nothing
+                        
 main :: IO ()
 main = do
     conn <- iniciandoDatabase
@@ -78,5 +98,10 @@ main = do
     else if perfil == "g" || perfil == "G" then do
         loginEfetuado <- loginGestor conn
         if loginEfetuado then funcoesGestor conn else do putStrLn ""
+    else if perfil == "u" || perfil == "U" then do
+        loginEfetuado <- loginUsuario conn
+        case loginEfetuado of
+            Just usuarioEncontrado -> funcoesUsuario conn usuarioEncontrado
+            Nothing -> putStrLn ""
     else do
         print "Nada"
