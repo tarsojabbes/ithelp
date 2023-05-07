@@ -77,9 +77,8 @@ lidaComOpcaoAtividade conn analista funcao_atividade = do
         atividade_titulo <- getLine
         putStrLn "Qual a descrição da atividade?"
         atividade_descricao <- getLine
-        putStrLn "Quem é o responsável pela atividade"
-        atividade_responsavel_id <- readLn :: IO Int
-        cadastrarAtividade conn atividade_titulo atividade_descricao "Nao iniciada" atividade_responsavel_id
+        cadastrarAtividade conn atividade_titulo atividade_descricao "Nao iniciada" (analista_id analista)
+        putStrLn "---Atividade cadastrada com sucesso--"
 
     else if funcao_atividade == "2" then do
         atividades_nao_iniciadas <- buscarAtividadesNaoIniciadas conn
@@ -104,24 +103,26 @@ lidaComOpcaoAtividade conn analista funcao_atividade = do
     else if funcao_atividade == "6" then do
         putStrLn "Qual o ID da atividade que você deseja colocar em andamento?"
         atividade_id <- readLn :: IO Int
-        putStrLn "Qual o seu ID?"
-        atividade_responsavel_id <- readLn :: IO Int
         atualizarStatusAtividade conn atividade_id "Em andamento"
-        atualizarResponsavelIdAtividade conn atividade_id atividade_responsavel_id
+        atualizarResponsavelIdAtividade conn atividade_id (analista_id analista)
+        putStrLn "---Atividade colocada em andamento---"
     
     else if funcao_atividade == "7" then do
         putStrLn "Qual o ID atividade que você deseja marcar como concluída?"
         atividade_id <- readLn :: IO Int
         atualizarStatusAtividade conn atividade_id "Concluida"
+        putStrLn "---Atividade marcada como concluida---"
 
     else if funcao_atividade == "8" then do
         putStrLn "Qual o ID atividade que você deseja excluir?"
         atividade_id <- readLn :: IO Int
         excluirAtividade conn atividade_id
+        putStrLn "---Atividade excluída com sucesso---"
 
     else do
             printf "Você não selecionou uma opção válida. Selecione algum das opções abaixo\n"
-            lidaComFuncaoEscolhida conn analista "1"
+
+    funcoesAnalista conn analista 
 
 formataListaAtividade :: Connection -> [Atividade] -> IO ()
 formataListaAtividade _ [] = putStrLn ""
@@ -162,6 +163,7 @@ lidaComOpcaoInventario conn analista funcao_inventario = do
             putStrLn "Qual a marca do item a ser adicionado?"
             itemMarca <- getLine
             cadastrarItemInventario conn itemNome itemMarca 
+            putStrLn "---Item cadastrado com sucesso---"
     
         "2" -> do
             itens <- listarItensInventario conn
@@ -203,16 +205,19 @@ lidaComOpcaoInventario conn analista funcao_inventario = do
             case itemEncontrado of
                 Just item -> atualizarItemInventario conn itemId itemNome itemMarca
                 Nothing -> printf "Item de Inventario com o ID informado não foi encontrado\n"
+            putStrLn "---Item atualizado com sucesso--"
 
 
         "7" -> do
             putStrLn "Qual o ID do item de Inventário que você deseja excluir?"
             itemId <- readLn :: IO Int
             excluirItemInventario conn itemId
+            putStrLn "---Item excluído com sucesso---"
 
         _ -> do
             printf "Você não selecionou uma opção válida. Selecione alguma das opções abaixo\n"
-            lidaComOpcaoInventario conn analista "2"
+        
+    funcoesAnalista conn analista
 
 formataListaItensInventario :: Connection -> [ItemInventario] -> IO ()
 formataListaItensInventario _ [] = putStrLn ""
@@ -251,9 +256,7 @@ lidaComOpcaoChamado conn analista funcao_chamado = do
         chamado_titulo <- getLine
         putStrLn "Qual a descrição do chamado?"
         chamado_descricao <- getLine
-        putStrLn "Quem é o responsável pelo chamado"
-        chamado_responsavel_id <- readLn :: IO Int
-        cadastrarChamado conn chamado_titulo chamado_descricao "Nao iniciado" chamado_responsavel_id chamado_responsavel_id
+        cadastrarChamado conn chamado_titulo chamado_descricao "Nao iniciado" (analista_id analista) (analista_id analista)
         putStrLn "---Chamado criado com sucesso---"
 
     else if funcao_chamado == "2" then do
@@ -279,10 +282,9 @@ lidaComOpcaoChamado conn analista funcao_chamado = do
     else if funcao_chamado == "6" then do
         putStrLn "Qual o ID do chamado que você deseja colocar em andamento?"
         chamado_id <- readLn :: IO Int
-        putStrLn "Qual o seu ID?"
-        chamado_analista_id <- readLn :: IO Int
         atualizarStatusChamado conn chamado_id "Em andamento"
-        atualizarAnalistaIdChamado conn chamado_id chamado_analista_id
+        let id_analista = analista_id analista
+        atualizarAnalistaIdChamado conn chamado_id id_analista
         putStrLn "---Chamado colocado em andamento com sucesso---"
     
     else if funcao_chamado == "7" then do
@@ -307,7 +309,8 @@ lidaComOpcaoChamado conn analista funcao_chamado = do
 
     else do
             printf "Você não selecionou uma opção válida. Selecione algum das opções abaixo\n"
-            lidaComFuncaoEscolhida conn analista "3"
+    
+    funcoesAnalista conn analista
 
 formataListaChamado :: Connection -> [Chamado] -> IO ()
 formataListaChamado _ [] = putStrLn ""
