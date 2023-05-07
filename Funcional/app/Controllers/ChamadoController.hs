@@ -54,15 +54,18 @@ buscarChamadosConcluidos conn = do
                         \c.chamado_analista_id \
                         \FROM chamado c WHERE c.chamado_status = 'Concluido'" :: IO [Chamado]
 
-buscarChamadosPorTitulo :: Connection -> String -> IO [Chamado]
+buscarChamadosPorTitulo :: Connection -> String -> IO (Maybe [Chamado])
 buscarChamadosPorTitulo conn titulo = do
-    query conn "SELECT c.chamado_id, \
-                        \c.chamado_titulo, \
-                        \c.chamado_descricao, \
-                        \c.chamado_status, \
-                        \c.chamado_criador_id, \
-                        \c.chamado_analista_id \
-                        \FROM chamado c WHERE c.chamado_titulo = ?" (Only titulo)
+    result <- query conn "SELECT c.chamado_id, \
+                          \c.chamado_titulo, \
+                          \c.chamado_descricao, \
+                          \c.chamado_status, \
+                          \c.chamado_criador_id, \
+                          \c.chamado_analista_id \
+                          \FROM chamado c WHERE c.chamado_titulo = ?" (Only titulo)
+    case result of
+        [] -> return Nothing
+        chamados -> return (Just chamados)
 
 buscarChamadoPorId :: Connection -> Int -> IO (Maybe Chamado)
 buscarChamadoPorId conn id = do

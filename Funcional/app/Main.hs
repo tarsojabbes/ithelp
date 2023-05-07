@@ -8,7 +8,7 @@ import Controllers.AtividadeController (listarAtividades, cadastrarAtividade, bu
 import Controllers.ChamadoController (listarChamados)
 import Controllers.ItemInventarioController (listarItensInventario)
 import Controllers.UsuarioController
-import Models.Gestor (Gestor(gestor_senha))
+import Models.Gestor (Gestor(gestor_senha, gestor_id), gestor_nome)
 import Controllers.GestorController (buscarGestorPorEmail)
 import Models.Analista
 import Models.Usuario
@@ -43,26 +43,6 @@ loginAnalista conn = do
         Nothing -> do
             print "Analista não encontrado"
             return Nothing
-
-loginGestor :: Connection -> IO Bool
-loginGestor conn = do
-    putStrLn "Informe o seu email:"
-    email <- getLine
-    putStrLn "Informe a sua senha:"
-    senha <- getLine
-    maybeGestorEncontrado <- buscarGestorPorEmail conn email
-    case maybeGestorEncontrado of
-        Just gestorEncontrado ->
-            if gestor_senha gestorEncontrado == senha
-            then do
-                printf "Seja bem vindo, %s, caso requisitado informe seu ID: %d" (gestor_nome gestorEncontrado) (gestor_id gestorEncontrado)
-                return True
-            else do
-                print "Senha incorreta"
-                return False
-        Nothing -> do
-            print "Gestor não encontrado"
-            return False
 
 loginGestor :: Connection -> IO Bool
 loginGestor conn = do

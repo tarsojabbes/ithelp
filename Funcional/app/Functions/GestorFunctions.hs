@@ -1,8 +1,12 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Functions.GestrorFunctions where
+module Functions.GestorFunctions where
 import Database.PostgreSQL.Simple
 import Controllers.ChamadoController
-import Controllers.GestorController (acessaAtividades,acessaInventario,acessaChamados,acessaChamadoPorId,acessaChamadoPorTitulo,chamadosAbertos,criarAnalista,criarUsuario,calculaEstatisticasChamados,criarAtividadeParaAnalista,delegarAtividadeParaAnalista,historicoDeChamados)
+import Controllers.GestorController (acessaAtividades,acessaInventario,acessaChamados,acessaChamadoPorId, chamadosAbertos,criarAnalista,criarUsuario,calculaEstatisticasChamados,criarAtividadeParaAnalista,delegarAtividadeParaAnalista,historicoDeChamados)
+import Functions.AnalistaFunctions (formataListaDeChamados, formataListaItensInventario, formataListaAtividade, formataListaChamado, formataChamado)
+import Controllers.ItemInventarioController (listarItensInventario)
+import Controllers.AtividadeController (listarAtividades)
+import Models.Chamado (Chamado(chamado_titulo))
 
 funcoesGestor :: Connection -> IO ()
 funcoesGestor conn = do
@@ -30,8 +34,12 @@ lidaComFuncaoEscolhida conn funcao = do
         exibeMenuOpcoesGestorChamado
         funcao_chamado <- getLine
         lidaComOpcaoChamado conn funcao_chamado
-    else if funcao == "2" then acessaInventario
-    else if funcao == "3" then acessaAtividades
+    else if funcao == "2" then do
+        itens <- listarItensInventario conn
+        formataListaItensInventario conn itens
+    else if funcao == "3" then do
+        atividades <- listarAtividades conn
+        formataListaAtividade conn atividades
 
     else if funcao == "4" then do
         putStrLn "Qual o titulo da atividade a ser criada?"
@@ -72,7 +80,7 @@ lidaComFuncaoEscolhida conn funcao = do
         putStrLn "---Analista cadastrado com sucesso---"
 
     else do
-        printf "A função escolhida não existe. Por favor, selecione alguma das opções abaixo\n"
+        print "A função escolhida não existe. Por favor, selecione alguma das opções abaixo\n"
         funcoesGestor conn
 
 exibeMenuOpcoesGestorChamado :: IO ()
@@ -88,17 +96,29 @@ exibeMenuOpcoesGestorChamado = do
 
 lidaComOpcaoChamado :: Connection -> String -> IO ()
 lidaComOpcaoChamado conn funcao_chamado = do
-    if funcao_chamado == "1" then acessaChamados
-    else if  funcao_chamado == "2" then chamadosAbertos
-    else if  funcao_chamado == "3" then calculaEstatisticasChamados
+    if funcao_chamado == "1" then do
+        chamados <- listarChamados conn
+        formataListaChamado conn chamados
+    else if  funcao_chamado == "2" then do
+        chamados_abertos <- buscarChamadosEmAndamento conn
+        formataListaChamado conn chamados_abertos
+    else if  funcao_chamado == "3" then do
+        calculaEstatisticasChamados conn
     else if  funcao_chamado == "4" then do
         putStrLn "Qual o ID do chamado a ser acessado?"
-        chamado_id <- getLine
-        acessaChamadoPorId conn chamado_id
-    else if funcao_atividade == "5" then do
+        chamado_id <- readLn :: IO Int
+        chamado_encontrado <- buscarChamadoPorId conn chamado_id
+        case chamado_encontrado of
+            Just chamado -> formataChamado conn chamado
+            _ -> print "Chamado com ID informado não foi encontrado"
+
+    else if funcao_chamado == "5" then do
         putStrLn "Qual o título do chamado a ser acessado?"
         chamado_titulo <- getLine
-        acessaChamadoPorTitulo conn chamado_titulo
+        chamado_encontrado <- buscarChamadosPorTitulo conn chamado_titulo
+        case chamado_encontrado of
+            Just chamado -> formataListaChamado conn chamado
+            Nothing -> print "Chamado com título informado não foi encontrado"
     else do
-            printf "Você não selecionou uma opção válida. Selecione alguma das opções abaixo\n"
+            print "Você não selecionou uma opção válida. Selecione alguma das opções abaixo\n"
             lidaComFuncaoEscolhida conn "1"
