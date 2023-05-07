@@ -11,6 +11,7 @@ import Controllers.UsuarioController
 import Models.Gestor (Gestor(gestor_senha))
 import Controllers.GestorController (buscarGestorPorEmail)
 import Models.Analista
+import Models.Gestor
 import Models.Usuario
 import Models.Atividade (Atividade(atividade_responsavel_id, atividade_titulo, atividade_descricao))
 import Text.Printf

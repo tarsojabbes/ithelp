@@ -4,10 +4,18 @@ import Database.PostgreSQL.Simple
 import Models.Gestor (Gestor)
 import Controllers.ChamadoController (listarChamados, buscarChamadoPorId, buscarChamadosPorTitulo, buscarChamadosEmAndamento, buscarChamadosNaoIniciados, buscarChamadosConcluidos)
 import Controllers.ItemInventarioController (listarItensInventario)
-import Controllers.AtividadeController (listarAtividades, atualizarResponsavelIdAtividade)
+import Controllers.AtividadeController (listarAtividades, atualizarResponsavelIdAtividade, cadastrarAtividade)
 import Controllers.AnalistaController (cadastrarAnalista)
 import Controllers.UsuarioController (cadastrarUsuario)
 import Text.Printf (printf)
+
+import Database.PostgreSQL.Simple
+    ( execute, query, query_, Only(Only), Connection )
+import Models.Atividade
+import qualified Models.Atividade
+import qualified Control.Monad
+import Models.ItemInventario
+import Models.Chamado
 
 cadastrarGestor :: Connection -> String -> String -> String -> IO()
 cadastrarGestor conn nome email senha = do
@@ -62,7 +70,7 @@ acessaChamados :: Connection -> IO [Chamado]
 acessaChamados conn = listarChamados conn
 
 acessaChamadoPorId :: Connection -> Int -> IO (Maybe Chamado)
-acessaChamadoPorId conn = acessaChamadoPorID conn
+acessaChamadoPorId conn = buscarChamadoPorId conn
 
 acessaChamadoPorTitulo :: Connection -> String -> IO [Chamado]
 acessaChamadoPorTitulo conn titulo = buscarChamadosPorTitulo conn titulo 
@@ -76,11 +84,18 @@ criarAnalista conn nome email senha avaliacao = cadastrarAnalista conn nome emai
 criarUsuario :: Connection -> String -> String -> String -> IO()
 criarUsuario conn nome email senha = cadastrarUsuario conn nome email senha
 
-calculaEstatisticasChamados :: Connection -> IO [String]
-calculaEstatisticasChamados conn = do 
-    printf "%.2f chamados não iniciados" ((length buscarChamadosNaoIniciados conn) / (length acessaChamados conn))
-    printf "%.2f chamados em andamento" ((length buscarChamadosEmAndamento conn) / (length acessaChamados conn))
-    printf "%.2f chamados concluídos" ((length buscarChamadosConcluidos conn) / (length acessaChamados conn))
+
+
+
+
+
+calculaEstatisticasChamados :: Connection -> IO()
+calculaEstatisticasChamados conn = do
+    print "oi"
+
+
+
+
 
 criarAtividadeParaAnalista :: Connection -> String -> String -> String -> Int -> IO()
 criarAtividadeParaAnalista conn titulo descricao status responsavel_id  = cadastrarAtividade conn titulo descricao status responsavel_id 
