@@ -42,7 +42,7 @@ lidaComFuncaoEscolhida conn funcao = do
         formataListaAtividade conn atividades
 
     else if funcao == "4" then do
-        putStrLn "Qual o titulo da atividade a ser criada?"
+        putStrLn "Qual o título da atividade a ser criada?"
         atividade_titulo <- getLine
         putStrLn "Qual a descrição da atividade?"
         atividade_descricao <- getLine
@@ -80,7 +80,7 @@ lidaComFuncaoEscolhida conn funcao = do
         putStrLn "---Analista cadastrado com sucesso---"
 
     else do
-        print "A função escolhida não existe. Por favor, selecione alguma das opções abaixo\n"
+        putStrLn "A função escolhida não existe. Por favor, selecione alguma das opções abaixo\n"
         funcoesGestor conn
 
 exibeMenuOpcoesGestorChamado :: IO ()
@@ -110,7 +110,7 @@ lidaComOpcaoChamado conn funcao_chamado = do
         chamado_encontrado <- buscarChamadoPorId conn chamado_id
         case chamado_encontrado of
             Just chamado -> formataChamado conn chamado
-            _ -> print "Chamado com ID informado não foi encontrado"
+            _ -> putStrLn "Chamado com ID informado não foi encontrado"
 
     else if funcao_chamado == "5" then do
         putStrLn "Qual o título do chamado a ser acessado?"
@@ -118,7 +118,7 @@ lidaComOpcaoChamado conn funcao_chamado = do
         chamado_encontrado <- buscarChamadosPorTitulo conn chamado_titulo
         case chamado_encontrado of
             Just chamado -> formataListaChamado conn chamado
-            Nothing -> print "Chamado com título informado não foi encontrado"
+            Nothing -> putStrLn "Chamado com título informado não foi encontrado"
     else do
-            print "Você não selecionou uma opção válida. Selecione alguma das opções abaixo\n"
+            putStrLn "Você não selecionou uma opção válida. Selecione alguma das opções abaixo\n"
             lidaComFuncaoEscolhida conn "1"

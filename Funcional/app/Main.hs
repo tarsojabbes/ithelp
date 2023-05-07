@@ -39,10 +39,10 @@ loginAnalista conn = do
                 printf "Seja bem vindo, %s, caso requisitado informe seu ID: %d" (analista_nome analistaEncontrado) (analista_id analistaEncontrado)
                 return (Just analistaEncontrado)
             else do
-                print "Senha incorreta"
+                putStrLn "Senha incorreta"
                 return Nothing
         Nothing -> do
-            print "Analista não encontrado"
+            putStrLn "Analista não encontrado"
             return Nothing
 
 loginGestor :: Connection -> IO Bool
@@ -59,10 +59,10 @@ loginGestor conn = do
                 printf "Seja bem vindo, %s, caso requisitado informe seu ID: %d" (gestor_nome gestorEncontrado) (gestor_id gestorEncontrado)
                 return True
             else do
-                print "Senha incorreta"
+                putStrLn "Senha incorreta"
                 return False
         Nothing -> do
-            print "Gestor não encontrado"
+            putStrLn "Gestor não encontrado"
             return False
 
 loginUsuario :: Connection -> IO (Maybe Usuario)
@@ -79,10 +79,10 @@ loginUsuario conn = do
                 printf "Seja bem vindo, %s, caso requisitado informe seu ID: %d" (usuario_nome usuarioEncontrado) (usuario_id usuarioEncontrado)
                 return (Just usuarioEncontrado)
             else do
-                print "Senha incorreta"
+                putStrLn "Senha incorreta"
                 return Nothing
         Nothing -> do
-            print "Usuário não encontrado"
+            putStrLn "Usuário não encontrado"
             return Nothing
                         
 main :: IO ()
@@ -104,4 +104,4 @@ main = do
             Just usuarioEncontrado -> funcoesUsuario conn usuarioEncontrado
             Nothing -> putStrLn ""
     else do
-        print "Nada"
+        putStrLn "Nada"
