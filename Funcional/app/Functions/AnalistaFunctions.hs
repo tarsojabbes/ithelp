@@ -49,7 +49,9 @@ lidaComFuncaoEscolhida conn analista funcao
         funcaoChamado <- getLine
         lidaComOpcaoChamado conn analista funcaoChamado
 
-    | funcao == "4" = exibeEstatisticasProprias conn analista
+    | funcao == "4" = do
+        exibeEstatisticasProprias conn analista
+        funcoesAnalista conn analista
 
     | otherwise = do
         printf "A função escolhida não existe. Por favor, selecione alguma das opções abaixo\n"
@@ -296,7 +298,7 @@ lidaComOpcaoChamado conn analista funcao_chamado = do
     else if funcao_chamado == "8" then do
         putStrLn "Qual o ID do chamado que você deseja excluir?"
         chamado_id <- readLn :: IO Int
-        excluirAtividade conn chamado_id
+        excluirChamado conn chamado_id
         putStrLn "---Chamado excluído com sucesso---"
     
     else if funcao_chamado == "9" then do
@@ -327,7 +329,7 @@ formataChamado conn chamado = do
     printf "Status: %s\n" (chamado_status chamado)
     responsavel <- buscarAnalistaPorId conn (chamado_analista_id chamado)
     case responsavel of
-        Just analista -> printf "Responsavel: %s\n" (analista_nome analista)
+        Just analista -> printf "Responsavel: %s (ID: %d)\n" (analista_nome analista) (analista_id analista)
         Nothing -> printf "Não há analista responsável por essa atividade\n"
     
 --funções da exibição de estatísticas próprias
@@ -347,7 +349,7 @@ exibeEstatisticasProprias conn analista = do
 
         chamadosEncontrados <- buscarChamadoPorAnalistaId conn id
         case chamadosEncontrados of
-                Just chamados -> formataListaDeChamados conn chamados
+                Just chamados -> formataListaChamado conn chamados
                 Nothing -> printf "Chamados para o analista informado não foram encontrados\n"
 
 
@@ -357,12 +359,6 @@ formataAvaliacao conn analista = do
     printf "Avaliação dos usuários: %i" (analista_avaliacao analista)
     printf "\n------------------------\n"
 
-
-formataListaDeChamados :: Connection -> [Chamado] -> IO ()
-formataListaDeChamados _ [] = putStrLn ""
-formataListaDeChamados conn (x:xs) = do
-    formataChamadoDoAnalista conn x
-    formataListaDeChamados conn xs
 
 formataChamadoDoAnalista :: Connection -> Chamado -> IO ()
 formataChamadoDoAnalista conn chamado = do

@@ -3,7 +3,7 @@ module Functions.GestorFunctions where
 import Database.PostgreSQL.Simple
 import Controllers.ChamadoController
 import Controllers.GestorController (acessaAtividades,acessaInventario,acessaChamados,acessaChamadoPorId, chamadosAbertos,criarAnalista,criarUsuario,calculaEstatisticasChamados,criarAtividadeParaAnalista,delegarAtividadeParaAnalista,historicoDeChamados)
-import Functions.AnalistaFunctions (formataListaDeChamados, formataListaItensInventario, formataListaAtividade, formataListaChamado, formataChamado)
+import Functions.AnalistaFunctions (formataListaItensInventario, formataListaAtividade, formataListaChamado, formataChamado)
 import Controllers.ItemInventarioController (listarItensInventario)
 import Controllers.AtividadeController (listarAtividades)
 import Models.Chamado (Chamado(chamado_titulo))
@@ -104,7 +104,7 @@ lidaComOpcaoChamado conn funcao_chamado = do
         formataListaChamado conn chamados
 
     else if  funcao_chamado == "2" then do
-        chamados_abertos <- buscarChamadosEmAndamento conn
+        chamados_abertos <- buscarChamadosNaoIniciados conn
         formataListaChamado conn chamados_abertos
 
     else if  funcao_chamado == "3" then do

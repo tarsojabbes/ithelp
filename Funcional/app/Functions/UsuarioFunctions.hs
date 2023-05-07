@@ -8,7 +8,7 @@ import Models.Usuario
 import Models.Chamado
 import qualified Control.Monad
 import Text.Printf
-import Functions.AnalistaFunctions (formataListaDeChamados)
+import Functions.AnalistaFunctions (formataListaChamado)
 import Models.Analista (analista_id)
 
 funcoesUsuario :: Connection -> Usuario -> IO ()
@@ -45,7 +45,7 @@ lidaComFuncaoEscolhida conn usuario funcao
         let id_usuario = usuario_id usuario
         chamadosEncontrados <- buscarChamadoPorCriadorId conn id_usuario
         case chamadosEncontrados of
-                Just chamados -> formataListaDeChamados conn chamados
+                Just chamados -> formataListaChamado conn chamados
                 Nothing -> printf "Chamados para o usuário informado não foram encontrados\n"
         funcoesUsuario conn usuario
 
