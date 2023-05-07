@@ -16,6 +16,7 @@ import Models.Atividade (Atividade(atividade_responsavel_id, atividade_titulo, a
 import Text.Printf
 import Functions.AnalistaFunctions
 import Functions.GestorFunctions
+import Functions.UsuarioFunctions
 
 exibeMenuLogin :: IO ()
 exibeMenuLogin = do
@@ -35,13 +36,13 @@ loginAnalista conn = do
         Just analistaEncontrado ->
             if analista_senha analistaEncontrado == senha
             then do
-                printf "Seja bem vindo, %s, caso requisitado informe seu ID: %d" (analista_nome analistaEncontrado) (analista_id analistaEncontrado)
+                printf "Seja bem vindo, %s, caso requisitado informe seu ID: %d\n" (analista_nome analistaEncontrado) (analista_id analistaEncontrado)
                 return (Just analistaEncontrado)
             else do
-                print "Senha incorreta"
+                putStrLn "Senha incorreta"
                 return Nothing
         Nothing -> do
-            print "Analista não encontrado"
+            putStrLn "Analista não encontrado"
             return Nothing
 
 loginGestor :: Connection -> IO Bool
@@ -55,16 +56,35 @@ loginGestor conn = do
         Just gestorEncontrado ->
             if gestor_senha gestorEncontrado == senha
             then do
-                printf "Seja bem vindo, %s, caso requisitado informe seu ID: %d" (gestor_nome gestorEncontrado) (gestor_id gestorEncontrado)
+                printf "Seja bem vindo, %s, caso requisitado informe seu ID: %d\n" (gestor_nome gestorEncontrado) (gestor_id gestorEncontrado)
                 return True
             else do
-                print "Senha incorreta"
+                putStrLn "Senha incorreta"
                 return False
         Nothing -> do
-            print "Gestor não encontrado"
+            putStrLn "Gestor não encontrado"
             return False
-                        
 
+loginUsuario :: Connection -> IO (Maybe Usuario)
+loginUsuario conn = do
+    putStrLn "Informe o seu email:"
+    email <- getLine
+    putStrLn "Informe a sua senha:"
+    senha <- getLine
+    maybeUsuarioEncontrado <- buscarUsuarioPorEmail conn email
+    case maybeUsuarioEncontrado of
+        Just usuarioEncontrado ->
+            if usuario_senha usuarioEncontrado == senha
+            then do
+                printf "Seja bem vindo, %s, caso requisitado informe seu ID: %d\n" (usuario_nome usuarioEncontrado) (usuario_id usuarioEncontrado)
+                return (Just usuarioEncontrado)
+            else do
+                putStrLn "Senha incorreta"
+                return Nothing
+        Nothing -> do
+            putStrLn "Usuário não encontrado"
+            return Nothing
+                        
 main :: IO ()
 main = do
     conn <- iniciandoDatabase
@@ -78,5 +98,10 @@ main = do
     else if perfil == "g" || perfil == "G" then do
         loginEfetuado <- loginGestor conn
         if loginEfetuado then funcoesGestor conn else do putStrLn ""
+    else if perfil == "u" || perfil == "U" then do
+        loginEfetuado <- loginUsuario conn
+        case loginEfetuado of
+            Just usuarioEncontrado -> funcoesUsuario conn usuarioEncontrado
+            Nothing -> putStrLn ""
     else do
-        print "Nada"
+        putStrLn "Nada"

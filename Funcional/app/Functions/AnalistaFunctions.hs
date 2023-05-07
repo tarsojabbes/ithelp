@@ -73,7 +73,7 @@ exibeMenuOpcoesAnalistaAtividade = do
 lidaComOpcaoAtividade :: Connection -> Analista -> String -> IO ()
 lidaComOpcaoAtividade conn analista funcao_atividade = do
     if funcao_atividade == "1" then do
-        putStrLn "Qual o titulo da atividade a ser criada?"
+        putStrLn "Qual o título da atividade a ser criada?"
         atividade_titulo <- getLine
         putStrLn "Qual a descrição da atividade?"
         atividade_descricao <- getLine
@@ -139,7 +139,7 @@ formataAtividade conn atividade = do
     responsavel <- buscarAnalistaPorId conn (atividade_responsavel_id atividade)
     case responsavel of
         Just analista -> printf "Responsavel: %s\n" (analista_nome analista)
-        Nothing -> printf "Nao ha analista responsavel por essa atividade"
+        Nothing -> printf "Nao há analista responsável por essa atividade\n"
 
 -- funcões do Inventario
 exibeMenuOpcoesAnalistaInventario :: IO ()
@@ -206,7 +206,7 @@ lidaComOpcaoInventario conn analista funcao_inventario = do
 
 
         "7" -> do
-            putStrLn "Qual o ID do Item de Inventário que você deseja excluir?"
+            putStrLn "Qual o ID do item de Inventário que você deseja excluir?"
             itemId <- readLn :: IO Int
             excluirItemInventario conn itemId
 
@@ -247,7 +247,7 @@ exibeMenuOpcoesAnalistaChamado = do
 lidaComOpcaoChamado :: Connection -> Analista -> String -> IO ()
 lidaComOpcaoChamado conn analista funcao_chamado = do
     if funcao_chamado == "1" then do
-        putStrLn "Qual o titulo do chamado a ser criado?"
+        putStrLn "Qual o título do chamado a ser criado?"
         chamado_titulo <- getLine
         putStrLn "Qual a descrição do chamado?"
         chamado_descricao <- getLine
@@ -295,7 +295,7 @@ lidaComOpcaoChamado conn analista funcao_chamado = do
         putStrLn "Qual o ID do chamado que você deseja excluir?"
         chamado_id <- readLn :: IO Int
         excluirAtividade conn chamado_id
-        putStrLn "---Chamado excluido com sucesso---"
+        putStrLn "---Chamado excluído com sucesso---"
     
     else if funcao_chamado == "9" then do
         putStrLn "Qual o ID do chamado que você deseja repassar?"
@@ -325,7 +325,7 @@ formataChamado conn chamado = do
     responsavel <- buscarAnalistaPorId conn (chamado_analista_id chamado)
     case responsavel of
         Just analista -> printf "Responsavel: %s\n" (analista_nome analista)
-        Nothing -> printf "Não há analista responsável por essa atividade"
+        Nothing -> printf "Não há analista responsável por essa atividade\n"
     
 --funções da exibição de estatísticas próprias
 exibeEstatisticasProprias :: Connection -> Analista -> IO ()
