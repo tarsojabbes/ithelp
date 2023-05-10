@@ -13,14 +13,19 @@ Utilizamos do Cabal para construir nosso projeto utilizando Haskell. O Cabal já
     - Para funcionar corretamente, tenha certeza que você tem uma tabela de dados "postgres" existente. 
     - Deve estar rodando no localhost na porta 5432 (padrão)
     - Deve possuir um usuário "postgres" que a senha é "123456"
-        - Você pode alterar no código-fonte para definir o usuário e a senha do banco de dados no arquivo `LocalDB/ConnectionDB.hs`
+        - Você pode alterar no código-fonte para definir o usuário e a senha do banco de dados no arquivo `Funcional/LocalDB/ConnectionDB.hs`
+    - Dica: consulte o ChatGPT com a seguinte pergunta: "Como instalar e configurar o PostgreSQL no `WINDOWS/MAC_OS/DISTRO_LINUX` na versão 13 ou superior que rode na porta padrão (5432), possua um usuário "postgres" com a senha "123456", e uma tabela chamada postgres?". Pode ser extremamente útil para que você configure seu ambiente corretamente.
 
 ### Como executar
-1. Build do projeto com Cabal
+1. Abra o projeto clonado do Github e navegue até a pasta `Funcional`
+    ```sh
+    cd Funcional/
+    ```
+2. Build do projeto com Cabal
     ```sh
     cabal build
     ```
-2. Executando o projeto com Cabal
+3. Executando o projeto com Cabal
     ```sh
     cabal run
     ```
