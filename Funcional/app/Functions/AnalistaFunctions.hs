@@ -137,6 +137,7 @@ formataAtividade conn atividade = do
     putStrLn "\n------------------------"
     printf "%s\n" (atividade_titulo atividade)
     putStrLn "------------------------"
+    printf "ID da atividade%s\n" (atividade_id atividade)
     printf "Descrição: %s\n" (atividade_descricao atividade)
     printf "Status: %s\n" (atividade_status atividade)
     responsavel <- buscarAnalistaPorId conn (atividade_responsavel_id atividade)
@@ -230,7 +231,8 @@ formataListaItensInventario conn (x:xs) = do
 formataItemInventario :: Connection -> ItemInventario -> IO ()
 formataItemInventario conn itemInventario = do
     printf "\n------------------------\n"
-    printf "Nome: %s\nMarca: %s\nData De Aquisição: %s\n" 
+    printf "ID do Item:%s\nNome: %s\nMarca: %s\nData De Aquisição: %s\n"
+            (item_id itemInventario)
             (item_nome itemInventario)
             (item_marca itemInventario)
             (show (item_data_aquisicao itemInventario))
@@ -325,6 +327,7 @@ formataChamado conn chamado = do
     putStrLn "\n------------------------"
     printf "%s\n" (chamado_titulo chamado)
     putStrLn "------------------------"
+    printf "ID do chamado: %s\n" (chamado_id chamado)
     printf "Descrição: %s\n" (chamado_descricao chamado)
     printf "Status: %s\n" (chamado_status chamado)
     responsavel <- buscarAnalistaPorId conn (chamado_analista_id chamado)
