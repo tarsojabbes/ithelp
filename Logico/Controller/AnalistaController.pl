@@ -17,11 +17,11 @@ analistaToJSON(Id, Nome, Email, Senha, Avaliacao, AnalistaJSON) :-
 
 % Exibir um analista
 exibirAnalista([]).
-exibirAnalista([H|T]) :-
+exibirAnalista([H|_]) :-
     write("ID: "), writeln(H.id),
     write("Nome: "), writeln(H.nome),
     write("Email: "), writeln(H.email),
-    write('Avaliacao: '), writeln(H.avaliacao).
+    write("Avaliacao: "), writeln(H.avaliacao).
 
 exibirAnalistas() :-
     lerJSON("./banco/analistas.json", Analistas),
