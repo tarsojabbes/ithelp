@@ -98,64 +98,48 @@ buscarChamadoPorAnalista(analistaId, Chamado) :-
     lerJSON("./banco/chamados.json", File),
     buscarChamadoPorAnalistaJSON(File, analistaId, Chamado).
 
-% Busca os chamados não iniciados
-exibirChamadosNaoIniciados() :-
-    lerJSON("./banco/chamados.json", Chamados),
-    exibirChamadoNaoIniciado(Chamados).
+% Buscar chamados por status no JSON
+buscarChamadoPorStatusJSON([], _, []).
+buscarChamadoPorStatusJSON([Chamado|T], Status, [Chamado|Out]) :-
+    Chamado.status = Status,
+    buscarChamadoPorStatusJSON(T, Status, Out).
+buscarChamadoPorStatusJSON([_|T], Status, Out) :-
+    buscarChamadoPorStatusJSON(T, Status, Out).
 
-% Exibir um chamado não iniciado
-exibirChamadoNaoIniciado([]).
-exibirChamadoNaoIniciado([H|T]) :-
-    H.status = 'Nao iniciado',
-    write("ID: "), writeln(H.id),
-    write("Titulo: "), writeln(H.titulo),
-    write("Descricao: "), writeln(H.descricao),
-    write("Status: "), writeln(H.status),
-    write("Criador: "), writeln(H.criador),
-    write("Responsavel: "), writeln(H.responsavel),
-    exibirChamadoNaoIniciado(T). 
-    % não sei se eu precisava tratar a cauda da lista, mas imaginei que, se não tivesse o status "não iniciado", 
-    % a relação não ia casar com nada aqui e daria false (fiz isso em todos os métodos que buscam chamados por algum status)
+% Buscar chamados por status
+buscarChamadoPorStatus(Status, Chamado) :-
+    lerJSON("./banco/chamados.json", File),
+    buscarChamadoPorStatusJSON(File, Status, Chamado).
 
-% Busca os chamados em andamento
-exibirChamadosEmAndamento() :-
-    lerJSON("./banco/chamados.json", Chamados),
-    exibirChamadoEmAndamento(Chamados).
+% Atualizar status de Chamado no JSON
+atualizarStatusChamadoJSON([], _, _, []).
+atualizarStatusChamadoJSON([H|T], H.id, Status, [_{id: H.id, titulo: H.titulo, descricao: H.descricao, status: Status, responsavelId: H.responsavelId}|T]).
+atualizarStatusChamadoJSON([H|T], Id, Status, [H|Out]) :-
+    atualizarStatusChamadoJSON(T, Id, Status, Out).
 
-% Exibir um chamado em andamento
-exibirChamadoEmAndamento([]).
-exibirChamadoEmAndamento([H|T]) :-
-    H.status = 'Em andamento',
-    write("ID: "), writeln(H.id),
-    write("Titulo: "), writeln(H.titulo),
-    write("Descricao: "), writeln(H.descricao),
-    write("Status: "), writeln(H.status),
-    write("Criador: "), writeln(H.criador),
-    write("Responsavel: "), writeln(H.responsavel),
-    exibirChamadoEmAndamento(T).
+% Atualizar status de chamado (Nao iniciado, Em andamento, Concluido)
+atualizarStatusChamado(Id, NovoStatus) :-
+    lerJSON("./banco/Chamados.json", File),
+    atualizarStatusChamadoJSON(File, Id, NovoStatus, SaidaParcial),
+    chamadosToJSON(SaidaParcial, Saida),
+    open("./banco/chamados.json", write, Stream), write(Stream, Saida), close(Stream).
 
-% Busca os chamados concluídos
-exibirChamadosConcluidos() :-
-    lerJSON("./banco/chamados.json", Chamados),
-    exibirChamadoConcluido(Chamados).
+% Atualizar responsavel pelo chamado no JSON
+atualizarResponsavelIdChamadoJSON([], _, _, []).
+atualizarResponsavelIdChamadoJSON([H|T], H.id, ResponsavelId, [_{id: H.id, titulo: H.titulo, descricao: H.descricao, status: H.status, responsavelId: ResponsavelId}|T]).
+atualizareResponsavelIdChamadoJSON([H|T], Id, ResponsavelId, [H|Out]) :-
+    atualizarResponsavelIdChamadoJSON(T, Id, ResponsavelId, Out).
 
-% Exibir um chamado concluido
-exibirChamadoConcluido([]).
-exibirChamadoConcluido([H|T]) :-
-    H.status = 'Concluido',
-    write("ID: "), writeln(H.id),
-    write("Titulo: "), writeln(H.titulo),
-    write("Descricao: "), writeln(H.descricao),
-    write("Status: "), writeln(H.status),
-    write("Criador: "), writeln(H.criador),
-    write("Responsavel: "), writeln(H.responsavel),
-    exibirChamadoConcluido(T). 
+% Atualizar responsavel pelo chamado
+atualizarResponsavelIdChamado(Id, NovoResponsavelId) :-
+    lerJSON("./banco/Chamados.json", File),
+    atualizareResponsavelIdchamadoJSON(File, Id, NovoResponsavelId, SaidaParcial),
+    chamadosToJSON(SaidaParcial, Saida),
+    open("./banco/chamados.json", write, Stream), write(Stream, Saida), close(Stream).
 
 /*
 
 FALTANDO
-- Atualizar o status do chamado
-- Atualizar o analista do chamado
 - Calcular as estatísticas dos chamados
 
 */
