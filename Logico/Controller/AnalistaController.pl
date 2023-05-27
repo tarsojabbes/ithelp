@@ -69,7 +69,7 @@ buscarAnalistaPorId(Id, Analista) :-
 % Busca um analista pelo Email no JSON
 buscarAnalistaPorEmailJSON([], _, null).
 buscarAnalistaPorEmailJSON([Analista|_], Analista.email, Analista).
-buscarAnalistaPorEmailJSON([_|T], Email, [_|Out]Atividade.status = Status,) :- buscarAnalistaPorEmailJSON(T, Email, Out).
+buscarAnalistaPorEmailJSON([_|T], Email, [_|Out]) :- buscarAnalistaPorEmailJSON(T, Email, Out).
 
 % Busca um analista pelo Email
 buscarAnalistaPorEmail(Email, Analista) :-
