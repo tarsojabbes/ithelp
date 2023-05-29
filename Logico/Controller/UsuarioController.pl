@@ -1,3 +1,6 @@
+:- module(usuarioController, [exibirUsuario/1, exibirUsuarios/0, salvarUsuario/3, removerUsuario/1,
+                                buscarUsuarioPorEmail/2, buscarUsuarioPorId/2])
+
 :- use_module(library(http/json)).
 
 % Fato dinâmico para criar os IDs dos Usuarios
@@ -34,9 +37,10 @@ usuariosToJSON([H|T], [X|Out]) :-
 
 % Salva um usuário
 salvarUsuario(Nome, Email, Senha) :-
-    id(ID), incrementa_id,
     lerJSON("./banco/usuarios.json", File),
     usuariosToJSON(File, ListaUsuariosJSON),
+    length(ListaUsuariosJSON, Tamanho),
+    ID is Tamanho + 1,
     usuarioToJSON(ID, Nome, Email, Senha, UsuarioJSON),
     append(ListaUsuariosJSON, [UsuarioJSON], Saida),
     open("./banco/usuarios.json", write, Stream),

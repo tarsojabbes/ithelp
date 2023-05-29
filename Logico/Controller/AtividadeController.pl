@@ -1,9 +1,8 @@
+:- module(atividadeController, [exibirAtividade/1, exibirAtividades/0, salvarAtividade/4, buscarAtividadePorId/2,
+                                buscarAtividadePorStatus/2, atualizarStatusAtividade/2, atualizarResponsavelIdAtividade/2,
+                                removerAtividade/1])
+                                
 :- use_module(library(http/json)).
-
-% Fato dinâmico para criar os IDs das atividades
-id(1).
-incrementa_id :- retract(id(X)), Y is X + 1, assert(id(Y)).
-:- dynamic id/1.
 
 % Leitura dos arquivos de JSON
 lerJSON(FilePath, File) :-
@@ -36,9 +35,10 @@ exibirAtividades() :-
 
 % Salvar atividade
 salvarAtividade(Titulo, Descricao, Status, ResponsavelId) :-
-    id(ID), incrementa_id,
     lerJSON("./banco/atividades.json", File),
     atividadesToJSON(File, ListaAtividadesJSON),
+    length(ListaAtividadesJSON, Tamanho),
+    ID is Tamanho + 1,
     atividadeToJSON(ID, Titulo, Descricao, Status, ResponsavelId, AtividadeJSON),
     append(ListaAtividadesJSON, [AtividadeJSON], Saida),
     open("./banco/atividades.json", write, Stream),
@@ -62,6 +62,7 @@ buscarAtividadePorStatusJSON([Atividade|T], Status, [Atividade|Out]) :-
     buscarAtividadePorStatusJSON(T, Status, Out).
 buscarAtividadePorStatusJSON([_|T], Status, Out) :-
     buscarAtividadePorStatusJSON(T, Status, Out).
+
 % Buscar atividades por status
 buscarAtividadePorStatus(Status, Atividade) :-
     lerJSON("./banco/atividades.json", File),
@@ -83,13 +84,13 @@ atualizarStatusAtividade(Id, NovoStatus) :-
 % Atualizar responsavel pela atividade no JSON
 atualizarResponsavelIdAtividadeJSON([], _, _, []).
 atualizarResponsavelIdAtividadeJSON([H|T], H.id, ResponsavelId, [_{id: H.id, titulo: H.titulo, descricao: H.descricao, status: H.status, responsavelId: ResponsavelId}|T]).
-atualizareResponsavelIdAtividadeJSON([H|T], Id, ResponsavelId, [H|Out]) :-
+atualizarResponsavelIdAtividadeJSON([H|T], Id, ResponsavelId, [H|Out]) :-
     atualizarResponsavelIdAtividadeJSON(T, Id, ResponsavelId, Out).
 
 % Atualizar responsavel pela atividade
 atualizarResponsavelIdAtividade(Id, NovoResponsavelId) :-
     lerJSON("./banco/atividades.json", File),
-    atualizareResponsavelIdAtividadeJSON(File, Id, NovoResponsavelId, SaidaParcial),
+    atualizarResponsavelIdAtividadeJSON(File, Id, NovoResponsavelId, SaidaParcial),
     atividadesToJSON(SaidaParcial, Saida),
     open("./banco/atividades.json", write, Stream), write(Stream, Saida), close(Stream).
 

@@ -1,9 +1,7 @@
-:- use_module(library(http/json)).
+:- module(gestorController, [exibirGestor/1, exibirGestores/0, salvarGestor/3, removerGestor/1,
+                            buscarGestorPorId/2, buscarGestorPorEmail/2])
 
-% Fato dinâmico para criar os IDs dos Gestores
-id(1).
-incrementa_id :- retract(id(X)), Y is X + 1, assert(id(Y)).
-:- dynamic id/1.
+:- use_module(library(http/json)).
 
 % Leitura dos arquivos de JSON
 lerJSON(FilePath, File) :-
@@ -34,9 +32,10 @@ gestoresToJSON([H|T], [X|Out]) :-
 
 % Salva um gestor
 salvarGestor(Nome, Email, Senha) :-
-    id(ID), incrementa_id,
     lerJSON("./banco/gestores.json", File),
     gestoresToJSON(File, ListaGestoresJSON),
+    length(ListaGestoresJSON, Tamanho),
+    ID is Tamanho + 1,
     gestorToJSON(ID, Nome, Email, Senha, GestorJSON),
     append(ListaGestoresJSON, [GestorJSON], Saida),
     open("./banco/gestores.json", write, Stream),

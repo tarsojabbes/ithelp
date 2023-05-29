@@ -1,9 +1,8 @@
-:- use_module(library(http/json)).
+:- module(chamadoController, [exibirChamado/1, exibirChamados/0, salvarChamado/5, removerChamado/3,
+                                atualizarResponsavelIdChamado/2, buscarChamadoPorId/2, buscarChamadoPorCriador/2,
+                                buscarChamadoPorAnalista/2, buscarChamadoPorStatus/2])
 
-% Fato dinâmico para criar os IDs dos Chamados
-id(1).
-incrementa_id :- retract(id(X)), Y is X + 1, assert(id(Y)).
-:- dynamic id/1.
+:- use_module(library(http/json)).
 
 % Leitura dos arquivos de JSON
 lerJSON(FilePath, File) :-
@@ -37,9 +36,10 @@ chamadosToJSON([H|T], [X|Out]) :-
 
 % Salva um chamado
 salvarChamado(Titulo, Descricao, Status, Criador, Responsavel) :-
-    id(ID), incrementa_id,
     lerJSON("./banco/chamados.json", File),
     chamadosToJSON(File, ListaChamadosJSON),
+    length(ListaChamadosJSON, Tamanho),
+    Id is Tamanho + 1,
     chamadoToJSON(Id, Titulo, Descricao, Status, Criador, Responsavel, ChamadoJSON),
     append(ListaChamadosJSON, [ChamadoJSON], Saida),
     open("./banco/chamados.json", write, Stream),
@@ -127,13 +127,13 @@ atualizarStatusChamado(Id, NovoStatus) :-
 % Atualizar responsavel pelo chamado no JSON
 atualizarResponsavelIdChamadoJSON([], _, _, []).
 atualizarResponsavelIdChamadoJSON([H|T], H.id, ResponsavelId, [_{id: H.id, titulo: H.titulo, descricao: H.descricao, status: H.status, responsavelId: ResponsavelId}|T]).
-atualizareResponsavelIdChamadoJSON([H|T], Id, ResponsavelId, [H|Out]) :-
+atualizarResponsavelIdChamadoJSON([H|T], Id, ResponsavelId, [H|Out]) :-
     atualizarResponsavelIdChamadoJSON(T, Id, ResponsavelId, Out).
 
 % Atualizar responsavel pelo chamado
 atualizarResponsavelIdChamado(Id, NovoResponsavelId) :-
     lerJSON("./banco/Chamados.json", File),
-    atualizareResponsavelIdchamadoJSON(File, Id, NovoResponsavelId, SaidaParcial),
+    atualizarResponsavelIdchamadoJSON(File, Id, NovoResponsavelId, SaidaParcial),
     chamadosToJSON(SaidaParcial, Saida),
     open("./banco/chamados.json", write, Stream), write(Stream, Saida), close(Stream).
 

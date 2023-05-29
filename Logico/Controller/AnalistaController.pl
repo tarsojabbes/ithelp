@@ -1,9 +1,7 @@
-:- use_module(library(http/json)).
+:- module(analistaController, [exibirAnalistas/0, exibirAnalista/1, salvarAnalista/4, removerAnalista/1, 
+                    buscarAnalistaPorId/2, buscarAnalistaPorEmail/2, editarAvaliacaoAnalista/2]).
 
-% Fato dinâmico para criar os IDs dos Analistas
-id(1).
-incrementa_id :- retract(id(X)), Y is X + 1, assert(id(Y)).
-:- dynamic id/1.
+:- use_module(library(http/json)).
 
 % Leitura dos arquivos de JSON
 lerJSON(FilePath, File) :-
@@ -35,9 +33,10 @@ analistasToJSON([H|T], [X|Out]) :-
 
 % Salva um analista
 salvarAnalista(Nome, Email, Senha, Avaliacao) :-
-    id(ID), incrementa_id,
     lerJSON("./banco/analistas.json", File),
     analistasToJSON(File, ListaAnalistasJSON),
+    length(ListaAnalistasJSON, Tamanho),
+    ID is Tamanho + 1,
     analistaToJSON(ID, Nome, Email, Senha, Avaliacao, AnalistaJSON),
     append(ListaAnalistasJSON, [AnalistaJSON], Saida),
     open("./banco/analistas.json", write, Stream),
