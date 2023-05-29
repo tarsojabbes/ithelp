@@ -4,6 +4,10 @@
                                 
 :- use_module(library(http/json)).
 
+ultimo_elemento([X], X).
+ultimo_elemento([_|T], X) :-
+    ultimo_elemento(T, X).
+
 % Leitura dos arquivos de JSON
 lerJSON(FilePath, File) :-
 	open(FilePath, read, F),
@@ -37,8 +41,8 @@ exibirAtividades() :-
 salvarAtividade(Titulo, Descricao, Status, ResponsavelId) :-
     lerJSON("./banco/atividades.json", File),
     atividadesToJSON(File, ListaAtividadesJSON),
-    length(ListaAtividadesJSON, Tamanho),
-    ID is Tamanho + 1,
+    ultimo_elemento(File, Ultimo),
+    ID is Ultimo.id + 1,
     atividadeToJSON(ID, Titulo, Descricao, Status, ResponsavelId, AtividadeJSON),
     append(ListaAtividadesJSON, [AtividadeJSON], Saida),
     open("./banco/atividades.json", write, Stream),

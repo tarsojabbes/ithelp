@@ -3,10 +3,9 @@
 
 :- use_module(library(http/json)).
 
-% Fato dinâmico para criar os IDs dos Usuarios
-id(1).
-incrementa_id :- retract(id(X)), Y is X + 1, assert(id(Y)).
-:- dynamic id/1.
+ultimo_elemento([X], X).
+ultimo_elemento([_|T], X) :-
+    ultimo_elemento(T, X).
 
 % Leitura dos arquivos de JSON
 lerJSON(FilePath, File) :-
@@ -39,8 +38,8 @@ usuariosToJSON([H|T], [X|Out]) :-
 salvarUsuario(Nome, Email, Senha) :-
     lerJSON("./banco/usuarios.json", File),
     usuariosToJSON(File, ListaUsuariosJSON),
-    length(ListaUsuariosJSON, Tamanho),
-    ID is Tamanho + 1,
+    ultimo_elemento(File, Ultimo),
+    ID is Ultimo.id + 1,
     usuarioToJSON(ID, Nome, Email, Senha, UsuarioJSON),
     append(ListaUsuariosJSON, [UsuarioJSON], Saida),
     open("./banco/usuarios.json", write, Stream),

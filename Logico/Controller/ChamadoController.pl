@@ -4,6 +4,10 @@
 
 :- use_module(library(http/json)).
 
+ultimo_elemento([X], X).
+ultimo_elemento([_|T], X) :-
+    ultimo_elemento(T, X).
+
 % Leitura dos arquivos de JSON
 lerJSON(FilePath, File) :-
 	open(FilePath, read, F),
@@ -38,8 +42,8 @@ chamadosToJSON([H|T], [X|Out]) :-
 salvarChamado(Titulo, Descricao, Status, Criador, Responsavel) :-
     lerJSON("./banco/chamados.json", File),
     chamadosToJSON(File, ListaChamadosJSON),
-    length(ListaChamadosJSON, Tamanho),
-    Id is Tamanho + 1,
+    ultimo_elemento(File, Ultimo),
+    Id is Ultimo.id + 1,
     chamadoToJSON(Id, Titulo, Descricao, Status, Criador, Responsavel, ChamadoJSON),
     append(ListaChamadosJSON, [ChamadoJSON], Saida),
     open("./banco/chamados.json", write, Stream),

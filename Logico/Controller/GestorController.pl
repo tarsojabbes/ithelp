@@ -3,6 +3,10 @@
 
 :- use_module(library(http/json)).
 
+ultimo_elemento([X], X).
+ultimo_elemento([_|T], X) :-
+    ultimo_elemento(T, X).
+
 % Leitura dos arquivos de JSON
 lerJSON(FilePath, File) :-
 	open(FilePath, read, F),
@@ -34,8 +38,8 @@ gestoresToJSON([H|T], [X|Out]) :-
 salvarGestor(Nome, Email, Senha) :-
     lerJSON("./banco/gestores.json", File),
     gestoresToJSON(File, ListaGestoresJSON),
-    length(ListaGestoresJSON, Tamanho),
-    ID is Tamanho + 1,
+    ultimo_elemento(File, Ultimo),
+    ID is Ultimo.id + 1,
     gestorToJSON(ID, Nome, Email, Senha, GestorJSON),
     append(ListaGestoresJSON, [GestorJSON], Saida),
     open("./banco/gestores.json", write, Stream),

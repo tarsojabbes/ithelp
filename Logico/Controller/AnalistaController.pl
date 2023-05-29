@@ -3,6 +3,10 @@
 
 :- use_module(library(http/json)).
 
+ultimo_elemento([X], X).
+ultimo_elemento([_|T], X) :-
+    ultimo_elemento(T, X).
+
 % Leitura dos arquivos de JSON
 lerJSON(FilePath, File) :-
 	open(FilePath, read, F),
@@ -35,8 +39,8 @@ analistasToJSON([H|T], [X|Out]) :-
 salvarAnalista(Nome, Email, Senha, Avaliacao) :-
     lerJSON("./banco/analistas.json", File),
     analistasToJSON(File, ListaAnalistasJSON),
-    length(ListaAnalistasJSON, Tamanho),
-    ID is Tamanho + 1,
+    ultimo_elemento(File, Ultimo),
+    ID is Ultimo.id + 1,
     analistaToJSON(ID, Nome, Email, Senha, Avaliacao, AnalistaJSON),
     append(ListaAnalistasJSON, [AnalistaJSON], Saida),
     open("./banco/analistas.json", write, Stream),
