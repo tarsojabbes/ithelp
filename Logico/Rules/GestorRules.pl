@@ -1,4 +1,4 @@
-:- module(gestorRules, [exibirMenuGestor/0, lidarComComando/1, lidarComOpcaoChamado/1, exibeFuncoesChamados/0])
+:- module(gestorRules, [mainMenuGestor/0,exibirMenuGestor/0, lidarComComando/1, lidarComOpcaoChamado/1, exibeFuncoesChamados/0])
 
 :- use_module("./Controller/AnalistaController.pl").
 :- use_module("./Controller/GestorController.pl").
@@ -8,7 +8,7 @@
 :- use_module("./Controller/ItemController.pl").
 
 mainMenuGestor():-
-    exibirMenuGestor,
+    exibirMenuGestor(),
     read(Comando),
     lidarComComando(Comando).
 
