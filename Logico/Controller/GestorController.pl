@@ -3,6 +3,7 @@
 
 :- use_module(library(http/json)).
 
+ultimo_elemento([], null).
 ultimo_elemento([X], X).
 ultimo_elemento([_|T], X) :-
     ultimo_elemento(T, X).
@@ -39,7 +40,7 @@ salvarGestor(Nome, Email, Senha) :-
     lerJSON("./banco/gestores.json", File),
     gestoresToJSON(File, ListaGestoresJSON),
     ultimo_elemento(File, Ultimo),
-    ID is Ultimo.id + 1,
+    (Ultimo = null -> Id = 1 ; Id is Ultimo.id + 1),
     gestorToJSON(ID, Nome, Email, Senha, GestorJSON),
     append(ListaGestoresJSON, [GestorJSON], Saida),
     open("./banco/gestores.json", write, Stream),
@@ -59,9 +60,9 @@ removerGestor(Id) :-
     open("./banco/gestores.json", write, Stream), write(Stream, Saida), close(Stream).
 
 % Busca um gestor pelo ID no JSON
-buscarGestorPorIdJSON([], _, null).
-buscarGestorPorIdJSON([Gestor|_], Gestor.id, Gestor).
-buscarGestorPorIdJSON([_|T], Id, [_|Out]) :- buscarGestorPorIdJSON(T, Id, Out).
+buscarGestorPorIdJSON([], _, []).
+buscarGestorPorIdJSON([Gestor|_], Gestor.id, [Gestor]).
+buscarGestorPorIdJSON([_|T], Id, Out) :- buscarGestorPorIdJSON(T, Id, Out).
 
 % Busca um gestor pelo ID 
 buscarGestorPorId(Id, Gestor) :-

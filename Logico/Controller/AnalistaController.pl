@@ -3,6 +3,7 @@
 
 :- use_module(library(http/json)).
 
+ultimo_elemento([], null).
 ultimo_elemento([X], X).
 ultimo_elemento([_|T], X) :-
     ultimo_elemento(T, X).
@@ -40,7 +41,7 @@ salvarAnalista(Nome, Email, Senha, Avaliacao) :-
     lerJSON("./banco/analistas.json", File),
     analistasToJSON(File, ListaAnalistasJSON),
     ultimo_elemento(File, Ultimo),
-    ID is Ultimo.id + 1,
+    (Ultimo = null -> Id = 1 ; Id is Ultimo.id + 1),
     analistaToJSON(ID, Nome, Email, Senha, Avaliacao, AnalistaJSON),
     append(ListaAnalistasJSON, [AnalistaJSON], Saida),
     open("./banco/analistas.json", write, Stream),
@@ -60,9 +61,9 @@ removerAnalista(Id) :-
     open("./banco/analistas.json", write, Stream), write(Stream, Saida), close(Stream).
 
 % Busca um analista pelo ID no JSON
-buscarAnalistaPorIdJSON([], _, null).
-buscarAnalistaPorIdJSON([Analista|_], Analista.id, Analista).
-buscarAnalistaPorIdJSON([_|T], Id, [_|Out]) :- buscarAnalistaPorIdJSON(T, Id, Out).
+buscarAnalistaPorIdJSON([], _, []).
+buscarAnalistaPorIdJSON([Analista|_], Analista.id, [Analista]).
+buscarAnalistaPorIdJSON([_|T], Id, Out) :- buscarAnalistaPorIdJSON(T, Id, Out).
 
 % Busca um analista pelo ID 
 buscarAnalistaPorId(Id, Analista) :-

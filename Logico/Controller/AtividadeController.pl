@@ -4,6 +4,7 @@
                                 
 :- use_module(library(http/json)).
 
+ultimo_elemento([], null).
 ultimo_elemento([X], X).
 ultimo_elemento([_|T], X) :-
     ultimo_elemento(T, X).
@@ -42,7 +43,7 @@ salvarAtividade(Titulo, Descricao, Status, ResponsavelId) :-
     lerJSON("./banco/atividades.json", File),
     atividadesToJSON(File, ListaAtividadesJSON),
     ultimo_elemento(File, Ultimo),
-    ID is Ultimo.id + 1,
+    (Ultimo = null -> Id = 1 ; Id is Ultimo.id + 1),
     atividadeToJSON(ID, Titulo, Descricao, Status, ResponsavelId, AtividadeJSON),
     append(ListaAtividadesJSON, [AtividadeJSON], Saida),
     open("./banco/atividades.json", write, Stream),
@@ -51,8 +52,8 @@ salvarAtividade(Titulo, Descricao, Status, ResponsavelId) :-
 
 % Buscar atividade por ID no JSON
 buscarAtividadePorIdJSON([], _, []).
-buscarAtividadePorIdJSON([Atividade|_], Atividade.id, Atividade).
-buscarAtividadePorIdJSON([_|T], Id, [_|Out]) :- buscarAtividadePorIdJSON(T, Id, Out).
+buscarAtividadePorIdJSON([Atividade|_], Atividade.id, [Atividade]).
+buscarAtividadePorIdJSON([_|T], Id, Out) :- buscarAtividadePorIdJSON(T, Id, Out).
 
 % Buscar atividade por ID
 buscarAtividadePorId(Id, Atividade) :-

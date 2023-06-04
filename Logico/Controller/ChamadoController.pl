@@ -1,9 +1,10 @@
-:- module(chamadoController, [exibirChamado/1, exibirChamados/0, salvarChamado/5, removerChamado/3,
+:- module(chamadoController, [exibirChamado/1, exibirChamados/0, salvarChamado/5, removerChamado/1,
                                 atualizarResponsavelIdChamado/2, buscarChamadoPorId/2, buscarChamadoPorCriador/2,
-                                buscarChamadoPorAnalista/2, buscarChamadoPorStatus/2])
+                                buscarChamadoPorAnalista/2, buscarChamadoPorStatus/2]).
 
 :- use_module(library(http/json)).
 
+ultimo_elemento([], null).
 ultimo_elemento([X], X).
 ultimo_elemento([_|T], X) :-
     ultimo_elemento(T, X).
@@ -15,18 +16,21 @@ lerJSON(FilePath, File) :-
 
 % Formata a linha que será adicionada no arquivo JSON
 chamadoToJSON(Id, Titulo, Descricao, Status, Criador, Responsavel, ChamadoJSON) :-
-    swritef(ChamadoJSON, '{"id": %w, "titulo": "%w", "descricao": "%w", "status": "%w", "criador": "%w", "responsavel": "%w"}',
+    swritef(ChamadoJSON, '{"id": %w, "titulo": "%w", "descricao": "%w", "status": "%w", "criador": %w, "responsavel": %w}',
             [Id, Titulo, Descricao, Status, Criador, Responsavel]).
 
 % Exibir um chamado
 exibirChamado([]).
-exibirChamado([H|_]) :-
+exibirChamado([H|T]) :-
+    writeln("-----------------------------------"),
     write("ID: "), writeln(H.id),
     write("Titulo: "), writeln(H.titulo),
     write("Descricao: "), writeln(H.descricao),
     write("Status: "), writeln(H.status),
     write("Criador: "), writeln(H.criador),
-    write("Responsavel: "), writeln(H.responsavel).
+    write("Responsavel: "), writeln(H.responsavel),
+    writeln("-----------------------------------"),
+    exibirChamado(T).
 
 exibirChamados() :-
     lerJSON("./banco/chamados.json", Chamados),
@@ -43,7 +47,7 @@ salvarChamado(Titulo, Descricao, Status, Criador, Responsavel) :-
     lerJSON("./banco/chamados.json", File),
     chamadosToJSON(File, ListaChamadosJSON),
     ultimo_elemento(File, Ultimo),
-    Id is Ultimo.id + 1,
+    (Ultimo = null -> Id = 1 ; Id is Ultimo.id + 1),
     chamadoToJSON(Id, Titulo, Descricao, Status, Criador, Responsavel, ChamadoJSON),
     append(ListaChamadosJSON, [ChamadoJSON], Saida),
     open("./banco/chamados.json", write, Stream),
@@ -63,9 +67,9 @@ removerChamado(Id) :-
     open("./banco/chamados.json", write, Stream), write(Stream, Saida), close(Stream).
 
 % Busca um chamado pelo ID no JSON
-buscarChamadoPorIdJSON([], _, null).
-buscarChamadoPorIdJSON([Chamado|_], Chamado.id, Chamado).
-buscarChamadoPorIdJSON([_|T], Id, [_|Out]) :- buscarChamadoPorIdJSON(T, Id, Out).
+buscarChamadoPorIdJSON([], _, []).
+buscarChamadoPorIdJSON([Chamado|_], Chamado.id, [Chamado]).
+buscarChamadoPorIdJSON([_|T], Id, Out) :- buscarChamadoPorIdJSON(T, Id, Out).
 
 % Busca um chamado pelo ID 
 buscarChamadoPorId(Id, Chamado) :-
@@ -117,27 +121,27 @@ buscarChamadoPorStatus(Status, Chamado) :-
 
 % Atualizar status de Chamado no JSON
 atualizarStatusChamadoJSON([], _, _, []).
-atualizarStatusChamadoJSON([H|T], H.id, Status, [_{id: H.id, titulo: H.titulo, descricao: H.descricao, status: Status, responsavelId: H.responsavelId}|T]).
+atualizarStatusChamadoJSON([H|T], H.id, Status, [_{id: H.id, titulo: H.titulo, descricao: H.descricao, status: Status, criador: H.criador, responsavel: H.responsavel}|T]).
 atualizarStatusChamadoJSON([H|T], Id, Status, [H|Out]) :-
     atualizarStatusChamadoJSON(T, Id, Status, Out).
 
 % Atualizar status de chamado (Nao iniciado, Em andamento, Concluido)
 atualizarStatusChamado(Id, NovoStatus) :-
-    lerJSON("./banco/Chamados.json", File),
+    lerJSON("./banco/chamados.json", File),
     atualizarStatusChamadoJSON(File, Id, NovoStatus, SaidaParcial),
     chamadosToJSON(SaidaParcial, Saida),
     open("./banco/chamados.json", write, Stream), write(Stream, Saida), close(Stream).
 
 % Atualizar responsavel pelo chamado no JSON
 atualizarResponsavelIdChamadoJSON([], _, _, []).
-atualizarResponsavelIdChamadoJSON([H|T], H.id, ResponsavelId, [_{id: H.id, titulo: H.titulo, descricao: H.descricao, status: H.status, responsavelId: ResponsavelId}|T]).
+atualizarResponsavelIdChamadoJSON([H|T], H.id, ResponsavelId, [_{id: H.id, titulo: H.titulo, descricao: H.descricao, status: H.status, criador: H.criador, responsavel: ResponsavelId}|T]).
 atualizarResponsavelIdChamadoJSON([H|T], Id, ResponsavelId, [H|Out]) :-
     atualizarResponsavelIdChamadoJSON(T, Id, ResponsavelId, Out).
 
 % Atualizar responsavel pelo chamado
 atualizarResponsavelIdChamado(Id, NovoResponsavelId) :-
-    lerJSON("./banco/Chamados.json", File),
-    atualizarResponsavelIdchamadoJSON(File, Id, NovoResponsavelId, SaidaParcial),
+    lerJSON("./banco/chamados.json", File),
+    atualizarResponsavelIdChamadoJSON(File, Id, NovoResponsavelId, SaidaParcial),
     chamadosToJSON(SaidaParcial, Saida),
     open("./banco/chamados.json", write, Stream), write(Stream, Saida), close(Stream).
 
