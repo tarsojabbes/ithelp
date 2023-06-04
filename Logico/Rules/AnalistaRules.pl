@@ -1,6 +1,7 @@
 :- module(analistaRules, [mainMenuAnalista/1]).
 
 :- use_module("../Controller/ChamadoController.pl").
+:- use_module("../Controller/ItemController.pl").
 
 mainMenuAnalista(Id) :-
     exibirMenuAnalista,
@@ -21,6 +22,12 @@ lidaComComando(1, Id) :-
     exibeOpcoesChamado,
     read(Opcao),
     lidaComOpcaoChamado(Opcao, Id).
+
+lidaComComando(3, Id) :-
+    exibeOpcoesInventario,
+    read(Opcao),
+    lidaComOpcaoInventario(Opcao, Id).
+
 lidaComComando(_, Id) :-
     writeln("A função escolhida não existe. Por favor, selecione alguma das opções abaixo"),
     mainMenuAnalista(Id).
@@ -105,3 +112,66 @@ lidaComOpcaoChamado(_, Id) :-
     writeln("Você não selecionou uma opção válida. Selecione algum das opções abaixo\n"),
     lidaComComando(1, Id).
 
+exibeOpcoesInventario :- 
+    writeln("---FUNÇÕES PARA QUADRO DE ITENS DO INVENTÁRIO---"),
+    writeln("1 - Criar novo item do inventário"),
+    writeln("2 - Listar os itens do inventário"),
+    writeln("3 - Buscar item do inventário por ID"),
+    writeln("4 - Buscar item do inventário por Nome"),
+    writeln("5 - Buscar item do inventário por Marca"),
+    writeln("6 - Atualizar um item do inventário"),
+    writeln("7 - Excluir um item do inventário").
+
+lidaComOpcaoInventario(1, Id) :-
+    writeln("Qual o nome do item a ser adicionado?"),
+    read(ItemNome),
+    writeln("Qual a marca do item a ser adicionado?"),
+    read(ItemMarca),
+    writeln("Qual a data de aquisição do item a ser adicionado?"),
+    read(ItemData),
+    itemController:salvarItem(ItemNome, ItemMarca, ItemData),
+    writeln("---Item cadastrado com sucesso---"),
+    mainMenuAnalista(Id).
+
+lidaComOpcaoInventario(2, Id) :-
+    itemController:exibirItens,
+    mainMenuAnalista(Id).
+
+lidaComOpcaoInventario(3, Id) :-
+    writeln("Qual o ID do item que você deseja buscar?"),
+    read(IdItem),
+    itemController:buscarItemPorId(IdItem, ItemEncontrado),
+    itemController:exibirItem(ItemEncontrado),
+    mainMenuAnalista(Id).
+
+lidaComOpcaoInventario(4, Id) :-
+    writeln("Qual o Nome do item que você deseja buscar?"),
+    read(Nome),
+    itemController:buscarItemPorNome(Nome, ItensEncontrados),
+    itemController:exibirItem(ItensEncontrados),
+    mainMenuAnalista(Id).
+
+lidaComOpcaoInventario(5, Id) :-
+    writeln("Qual o Marca do item que você deseja buscar?"),
+    read(Marca),
+    itemController:buscarItemPorMarca(Marca, ItensEncontrados),
+    itemController:exibirItem(ItensEncontrados),
+    mainMenuAnalista(Id).
+
+lidaComOpcaoInventario(6, Id) :-
+    writeln("Qual o Id do item que você deseja atualizar?"),
+    read(ItemId),
+    writeln("Qual o novo nome do item?"),
+    read(NovoNome),
+    writeln("Qual a nova marca do item?"),
+    read(NovaMarca), 
+    itemController:atualizarItem(ItemId, NovoNome, NovaMarca),
+    writeln("---Item atualizado com sucesso---"),
+    mainMenuAnalista(Id).
+
+lidaComOpcaoInventario(7, Id) :-
+    writeln("Qual o ID do item de Inventário que você deseja excluir?"),
+    read(ItemId),
+    itemController:removerItem(ItemId),
+    writeln("---Item excluído com sucesso---"),
+    mainMenuAnalista(Id).

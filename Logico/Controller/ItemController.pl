@@ -25,13 +25,17 @@ itemToJSON(Id, Nome, Marca, DataAquisicao, ItemJSON) :-
 
 % Exibir um item
 exibirItem([]).
-exibirItem([H|_]) :-
+exibirItem([H|T]) :-
+    writeln("-----------------------------------"),
     write("ID: "), writeln(H.id),
     write("Nome: "), writeln(H.nome),
-    write("Data de aquisição: "), writeln(H.data_aquisicao).
+    write("Marca: "), writeln(H.marca),
+    write("Data de aquisição: "), writeln(H.data_aquisicao),
+    writeln("-----------------------------------"),
+    exibirItem(T).
 
-exibirItens() :-
-    lerJSON("../banco/itens.json", Itens),
+exibirItens :-
+    lerJSON("./banco/itens.json", Itens),
     exibirItem(Itens).
 
 % Gera uma lista de items
@@ -42,13 +46,13 @@ itensToJSON([H|T], [X|Out]) :-
 
 % Salva um item
 salvarItem(Nome, Marca, DataAquisicao) :-
-    lerJSON("../banco/itens.json", File),
+    lerJSON("./banco/itens.json", File),
     itensToJSON(File, ListaItemJSON),
     ultimo_elemento(File, Ultimo),
     (Ultimo = null -> Id = 1 ; Id is Ultimo.id + 1),
     itemToJSON(Id, Nome, Marca, DataAquisicao, ItemJSON),
     append(ListaItemJSON, [ItemJSON], Saida),
-    open("../banco/itens.json", write, Stream),
+    open("./banco/itens.json", write, Stream),
     write(Stream, Saida),
     close(Stream).
 
@@ -59,37 +63,60 @@ removerItemJSON([H|T], Id, [H|Out]) :- removerItemJSON(T, Id, Out).
 
 % Remove um item
 removerItem(Id) :-
-    lerJSON("../banco/itens.json", File),
+    lerJSON("./banco/itens.json", File),
     removerItemJSON(File, Id, SaidaParcial),
     itensToJSON(SaidaParcial, Saida),
-    open("../banco/itens.json", write, Stream), write(Stream, Saida), close(Stream).
+    open("./banco/itens.json", write, Stream), write(Stream, Saida), close(Stream).
 
 % Busca um item pelo ID no JSON
-buscarItemPorIdJSON([], _, null).
-buscarItemPorIdJSON([Item|_], Item.id, Item).
-buscarItemPorIdJSON([_|T], Id, [_|Out]) :- buscarItemPorIdJSON(T, Id, Out).
+buscarItemPorIdJSON([], _, []).
+buscarItemPorIdJSON([Item|_], Item.id, [Item]).
+buscarItemPorIdJSON([_|T], Id, Out) :- buscarItemPorIdJSON(T, Id, Out).
 
 % Busca um item pelo ID 
 buscarItemPorId(Id, Item) :-
-    lerJSON("../banco/itens.json", File),
+    lerJSON("./banco/itens.json", File),
     buscarItemPorIdJSON(File, Id, Item).
 
 % Busca um item pela Marca no JSON
-buscarItemPorMarcaJSON([], _, null).
-buscarItemPorMarcaJSON([Item|_], Item.marca, Item).
-buscarItemPorMarcaJSON([_|T], Marca, [_|Out]) :- buscarItemPorMarcaJSON(T, Marca, Out).
+buscarItemPorMarcaJSON([], _, []).
+buscarItemPorMarcaJSON([Item|T], Marca, [Item|Out]) :-
+    Item.marca = Marca,
+    buscarItemPorMarcaJSON(T, Marca, Out).
+buscarItemPorMarcaJSON([_|T], Marca, Out) :-
+    buscarItemPorMarcaJSON(T, Marca, Out).
 
 % Busca um item pela Marca
 buscarItemPorMarca(Marca, Item) :-
-    lerJSON("../banco/itens.json", File),
+    lerJSON("./banco/itens.json", File),
     buscarItemPorMarcaJSON(File, Marca, Item).
 
-% Busca um item pela Nome no JSON
-buscarItemPorNomeJSON([], _, null).
-buscarItemPorNomeJSON([Item|_], Item.nome, Item).
-buscarItemPorNomeJSON([_|T], Nome, [_|Out]) :- buscarItemPorNomeJSON(T, Nome, Out).
+
+% Busca um item pelo Nome no JSON
+buscarItemPorNomeJSON([], _, []).
+buscarItemPorNomeJSON([Item|T], Nome, [Item|Out]) :-
+    Item.nome = Nome,
+    buscarItemPorNomeJSON(T, Nome, Out).
+buscarItemPorNomeJSON([_|T], Nome, Out) :-
+    buscarItemPorNomeJSON(T, Nome, Out).
 
 % Busca um item pelo Nome
 buscarItemPorNome(Nome, Item) :-
-    lerJSON("../banco/itens.json", File),
+    lerJSON("./banco/itens.json", File),
     buscarItemPorNomeJSON(File, Nome, Item).
+
+% Atualizar nome e marca do item no JSON
+atualizarItemJSON([], _, _, _, []).
+atualizarItemJSON([H|T], H.id, NovoNome, NovaMarca, [H{id: H.id, nome: NovoNome, marca: NovaMarca, data_aquisicao: H.data_aquisicao}|T]).
+atualizarItemJSON([H|T], Id, NovoNome, NovaMarca, [H|Out]) :-
+    atualizarItemJSON(T, Id, NovoNome, NovaMarca, Out).
+
+% Atualizar nome e marca do item
+atualizarItem(Id, NovoNome, NovaMarca) :-
+    lerJSON("./banco/itens.json", File),
+    atualizarItemJSON(File, Id, NovoNome, NovaMarca, SaidaParcial),
+    itensToJSON(SaidaParcial, Saida),
+    open("./banco/itens.json", write, Stream),
+    write(Stream, Saida),
+    close(Stream).
+
