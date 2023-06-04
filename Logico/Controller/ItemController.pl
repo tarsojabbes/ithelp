@@ -1,7 +1,12 @@
 :- module(itemController, [exibirItens/0, exibirItem/1, salvarItem/3, removerItem/1, 
-                    buscarItemPorId/2, buscarItemPorMarca/2]).
+                    buscarItemPorId/2, buscarItemPorMarca/2, buscarItemPorNome/2]).
 
 :- use_module(library(http/json)).
+
+ultimo_elemento([], null).
+ultimo_elemento([X], X).
+ultimo_elemento([_|T], X) :-
+    ultimo_elemento(T, X).
 
 % Fato dinâmico para criar os IDs dos Itens
 id(1).
@@ -26,23 +31,24 @@ exibirItem([H|_]) :-
     write("Data de aquisição: "), writeln(H.data_aquisicao).
 
 exibirItens() :-
-    lerJSON("./banco/itens.json", Itens),
+    lerJSON("../banco/itens.json", Itens),
     exibirItem(Itens).
 
 % Gera uma lista de items
 itensToJSON([], []).
 itensToJSON([H|T], [X|Out]) :-
     itemToJSON(H.id, H.nome, H.marca, H.data_aquisicao, X),
-    itemToJSON(T, Out).
+    itensToJSON(T, Out).
 
 % Salva um item
 salvarItem(Nome, Marca, DataAquisicao) :-
-    id(ID), incrementa_id,
-    lerJSON("./banco/itens.json", File),
-    itemToJSON(File, ListaItensJSON),
-    itemToJSON(ID, Nome, Marca, DataAquisicao, ItemJSON),
-    append(ListaItensJSON, [ItemJSON], Saida),
-    open("./banco/itens.json", write, Stream),
+    lerJSON("../banco/itens.json", File),
+    itensToJSON(File, ListaItemJSON),
+    ultimo_elemento(File, Ultimo),
+    (Ultimo = null -> Id = 1 ; Id is Ultimo.id + 1),
+    itemToJSON(Id, Nome, Marca, DataAquisicao, ItemJSON),
+    append(ListaItemJSON, [ItemJSON], Saida),
+    open("../banco/itens.json", write, Stream),
     write(Stream, Saida),
     close(Stream).
 
@@ -53,10 +59,10 @@ removerItemJSON([H|T], Id, [H|Out]) :- removerItemJSON(T, Id, Out).
 
 % Remove um item
 removerItem(Id) :-
-    lerJSON("./banco/itens.json", File),
+    lerJSON("../banco/itens.json", File),
     removerItemJSON(File, Id, SaidaParcial),
     itensToJSON(SaidaParcial, Saida),
-    open("./banco/itens.json", write, Stream), write(Stream, Saida), close(Stream).
+    open("../banco/itens.json", write, Stream), write(Stream, Saida), close(Stream).
 
 % Busca um item pelo ID no JSON
 buscarItemPorIdJSON([], _, null).
@@ -65,7 +71,7 @@ buscarItemPorIdJSON([_|T], Id, [_|Out]) :- buscarItemPorIdJSON(T, Id, Out).
 
 % Busca um item pelo ID 
 buscarItemPorId(Id, Item) :-
-    lerJSON("./banco/itens.json", File),
+    lerJSON("../banco/itens.json", File),
     buscarItemPorIdJSON(File, Id, Item).
 
 % Busca um item pela Marca no JSON
@@ -75,10 +81,15 @@ buscarItemPorMarcaJSON([_|T], Marca, [_|Out]) :- buscarItemPorMarcaJSON(T, Marca
 
 % Busca um item pela Marca
 buscarItemPorMarca(Marca, Item) :-
-    lerJSON("./banco/itens.json", File),
+    lerJSON("../banco/itens.json", File),
     buscarItemPorMarcaJSON(File, Marca, Item).
 
-% Busca um item pela Marca
-buscarItemPorMarca(Marca, Item) :-
-    lerJSON("./banco/itens.json", File),
-    buscarItemPorMarcaJSON(File, Marca, Item).
+% Busca um item pela Nome no JSON
+buscarItemPorNomeJSON([], _, null).
+buscarItemPorNomeJSON([Item|_], Item.nome, Item).
+buscarItemPorNomeJSON([_|T], Nome, [_|Out]) :- buscarItemPorNomeJSON(T, Nome, Out).
+
+% Busca um item pelo Nome
+buscarItemPorNome(Nome, Item) :-
+    lerJSON("../banco/itens.json", File),
+    buscarItemPorNomeJSON(File, Nome, Item).
