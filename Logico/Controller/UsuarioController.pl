@@ -3,6 +3,7 @@
 
 :- use_module(library(http/json)).
 
+ultimo_elemento([], null).
 ultimo_elemento([X], X).
 ultimo_elemento([_|T], X) :-
     ultimo_elemento(T, X).
@@ -39,7 +40,7 @@ salvarUsuario(Nome, Email, Senha) :-
     lerJSON("./banco/usuarios.json", File),
     usuariosToJSON(File, ListaUsuariosJSON),
     ultimo_elemento(File, Ultimo),
-    ID is Ultimo.id + 1,
+    (Ultimo = null -> Id = 1 ; Id is Ultimo.id + 1),
     usuarioToJSON(ID, Nome, Email, Senha, UsuarioJSON),
     append(ListaUsuariosJSON, [UsuarioJSON], Saida),
     open("./banco/usuarios.json", write, Stream),
@@ -59,9 +60,9 @@ removerUsuario(Id) :-
     open("./banco/usuarios.json", write, Stream), write(Stream, Saida), close(Stream).
 
 % Busca um usuario por ID no JSON
-buscarUsuarioPorIdJSON([], _, null).
-buscarUsuarioPorIdJSON([Usuario|_], Usuario.id, Usuario).
-buscarUsuarioPorIdJSON([_|T], Id, [_|Out]) :- buscarUsuarioPorIdJSON(T, Id, Out).
+buscarUsuarioPorIdJSON([], _, []).
+buscarUsuarioPorIdJSON([Usuario|_], Usuario.id, [Usuario]).
+buscarUsuarioPorIdJSON([_|T], Id, Out) :- buscarUsuarioPorIdJSON(T, Id, Out).
 
 % Busca um usuário por ID
 buscarUsuarioPorId(Id, Usuario) :-

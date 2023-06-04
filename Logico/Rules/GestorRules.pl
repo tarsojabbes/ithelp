@@ -85,8 +85,8 @@ lidarComOpcaoChamado("1"):-
     chamadoController:exibeChamados().
 lidarComOpcaoChamado("2"):-
     chamadoController:buscarChamadoPorStatus('Nao iniciado',Chamado).
-lidarComOpcaoChamado("3"):-
-    % tá faltando o método de calcular as estatísticas ainda
+lidarComOpcaoChamado("3").
+    % tá faltando o metodo de calcular as estatísticas ainda
 lidarComOpcaoChamado("4"):-
     writeln("Qual o ID do chamado a ser acessado?"),
     read(Id),
