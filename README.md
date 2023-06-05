@@ -29,3 +29,21 @@ Utilizamos do Cabal para construir nosso projeto utilizando Haskell. O Cabal já
     ```sh
     cabal run
     ```
+
+## Implementanção Lógica (Prolog)
+
+Utilizamos somente o SWI-Prolog para construir o nosso projeto em Prolog. 
+
+### Dependências
+- SWI-Prolog
+    - Para conseguir rodar o projeto você deve ter o SWI-Prolog instalado na sua máquina. Acesse o [site oficial](https://www.swi-prolog.org/Download.html) para saber como.
+
+### Como executar
+1. Abra o projeto clonado do Github e navegue até a pasta `Logico`
+    ```sh
+    cd Logico/
+    ```
+2. Execute o projeto utilizando o SWI-Prolog:
+    ```sh
+    swipl -o -f main.pl
+    ```
