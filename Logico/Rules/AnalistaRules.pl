@@ -3,6 +3,7 @@
 :- use_module("../Controller/ChamadoController.pl").
 :- use_module("../Controller/ItemController.pl").
 :- use_module("../Controller/AtividadeController.pl").
+:- use_module("../Controller/AnalistaController.pl").
 
 mainMenuAnalista(Id) :-
     exibirMenuAnalista,
@@ -33,6 +34,9 @@ lidaComComando(3, Id) :-
     exibeOpcoesInventario,
     read(Opcao),
     lidaComOpcaoInventario(Opcao, Id).
+
+lidaComComando(4, Id) :-
+    lidaComOpcaoEstatisticasProprias(Id).
 
 lidaComComando(_, Id) :-
     writeln("A função escolhida não existe. Por favor, selecione alguma das opções abaixo"),
@@ -255,3 +259,46 @@ lidaComOpcaoAtividade(8, Id) :-
 lidaComOpcaoAtividade(_, Id) :-
     writeln("Você não selecionou uma opção válida. Selecione algum das opções abaixo\n"),
     lidaComComando(2, Id).
+
+% lógica para as estatísticas próprias
+lidaComOpcaoEstatisticasProprias(Id) :-
+    writeln("Qual o ID do analista que você deseja ver as estatísticas?"),
+    read(AnalistaId), nl,
+    analistaController:buscarAnalistaPorId(AnalistaId, Analista),
+    exibirAvaliacaoAnalista(Analista),
+    exibirChamadosAnalista(AnalistaId),
+    mainMenuAnalista(Id).
+
+% exibição da avaliação do analista
+exibirAvaliacaoAnalista([]) :-
+    writeln("Analista não encontrado.").
+exibirAvaliacaoAnalista([Analista|_]) :-
+    avaliacaoAnalista(Analista, Avaliacao),
+    writeln("--------------------------"),
+    write("Avaliação dos usuários: "),
+    writeln(Avaliacao),
+    writeln("--------------------------"),  nl.
+
+avaliacaoAnalista(Analista, Avaliacao) :-
+    Avaliacao = Analista.avaliacao.
+
+% exibição dos chamados do analista
+exibirChamadosAnalista(AnalistaId) :-
+    chamadoController:buscarChamadoPorAnalista(AnalistaId, Chamados),
+    writeln("--------------------------"),
+    writeln("Chamados do Analista "),
+    writeln("--------------------------"), nl,
+    printarChamados(Chamados).
+
+printarChamados([]).
+printarChamados([Chamado|Resto]) :-
+    printarChamado(Chamado),
+    printarChamados(Resto).
+
+printarChamado(Chamado) :-
+    write("Chamado: "),
+    writeln(Chamado.titulo),
+    write("Descrição: " ),
+    writeln(Chamado.descricao),
+    write("Status: "),
+    writeln(Chamado.status), nl.
