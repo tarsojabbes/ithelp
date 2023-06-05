@@ -20,10 +20,11 @@ gestorToJSON(Id, Nome, Email, Senha, GestorJSON) :-
 
 % Exibir um gestor
 exibirGestor([]).
-exibirGestor([H|_]) :-
+exibirGestor([H|T]) :-
     write("ID: "), writeln(H.id),
     write("Nome: "), writeln(H.nome),
-    write("Email: "), writeln(H.email).
+    write("Email: "), writeln(H.email),
+    exibirGestor(T).
 
 exibirGestores() :-
     lerJSON("./banco/gestores.json", Gestores),
