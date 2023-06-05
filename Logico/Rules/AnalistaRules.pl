@@ -2,6 +2,7 @@
 
 :- use_module("../Controller/ChamadoController.pl").
 :- use_module("../Controller/ItemController.pl").
+:- use_module("../Controller/AtividadeController.pl").
 
 mainMenuAnalista(Id) :-
     exibirMenuAnalista,
@@ -22,6 +23,11 @@ lidaComComando(1, Id) :-
     exibeOpcoesChamado,
     read(Opcao),
     lidaComOpcaoChamado(Opcao, Id).
+
+lidaComComando(2, Id) :-
+    exibeOpcoesAtividade,
+    read(Opcao),
+    lidaComOpcaoAtividade(Opcao, Id).
 
 lidaComComando(3, Id) :-
     exibeOpcoesInventario,
@@ -175,3 +181,77 @@ lidaComOpcaoInventario(7, Id) :-
     itemController:removerItem(ItemId),
     writeln("---Item excluído com sucesso---"),
     mainMenuAnalista(Id).
+
+lidaComOpcaoInventario(_, Id) :- 
+    writeln("Você não selecionou uma opção válida. Selecione algum das opções abaixo\n"),
+    lidaComComando(3, Id).
+
+exibeOpcoesAtividade :-
+    writeln("---FUNÇÕES PARA QUADRO DE ATIVIDADES---"),
+    writeln("1 - Criar nova atividade"),
+    writeln("2 - Listar atividades não iniciadas"),
+    writeln("3 - Listar atividades em andamento"),
+    writeln("4 - Listar atividades concluídas"),
+    writeln("5 - Buscar atividade por ID"),
+    writeln("6 - Colocar atividade em andamento"),
+    writeln("7 - Finalizar atividade"),
+    writeln("8 - Excluir uma atividade"),
+    writeln("------------------------------------------"),
+    writeln("Qual função você deseja executar?").
+
+lidaComOpcaoAtividade(1, Id) :-
+    writeln("Qual o título da atividade a ser criada?"),
+    read(Titulo),
+    writeln("Qual a descrição da atividade?"),
+    read(Descricao),
+    atividadeController:salvarAtividade(Titulo, Descricao, "Nao iniciada", Id),
+    writeln("---Atividade cadastrada com sucesso--"),
+    mainMenuAnalista(Id).
+
+lidaComOpcaoAtividade(2, Id) :-
+    atividadeController:buscarAtividadePorStatus("Nao iniciada", Atividades),
+    atividadeController:exibirAtividade(Atividades),
+    mainMenuAnalista(Id).
+
+lidaComOpcaoAtividade(3, Id) :- 
+    atividadeController:buscarAtividadePorStatus("Em andamento", Atividades),
+    atividadeController:exibirAtividade(Atividades),
+    mainMenuAnalista(Id).
+
+lidaComOpcaoAtividade(4, Id) :-
+    atividadeController:buscarAtividadePorStatus("Concluida", Atividades),
+    atividadeController:exibirAtividade(Atividades),
+    mainMenuAnalista(Id).
+
+lidaComOpcaoAtividade(5, Id) :-
+    writeln("Qual o ID da atividade que você deseja buscar?"),
+    read(IdAtividade),
+    atividadeController:buscarAtividadePorId(IdAtividade, Atividade),
+    atividadeController:exibirAtividade(Atividade),
+    mainMenuAnalista(Id).
+
+lidaComOpcaoAtividade(6, Id) :-
+    writeln("Qual o ID da atividade que você deseja colocar em andamento?"),
+    read(IdAtividade),
+    atividadeController:atualizarStatusAtividade(IdAtividade, "Em andamento"),
+    atividadeController:atualizarResponsavelIdAtividade(IdAtividade, Id),
+    writeln("---Atividade colocada em andamento---"),
+    mainMenuAnalista(Id).
+
+lidaComOpcaoAtividade(7, Id) :-
+    writeln("Qual o ID atividade que você deseja marcar como concluída?"),
+    read(IdAtividade),
+    atividadeController:atualizarStatusAtividade(IdAtividade, "Concluida"),
+    writeln("---Atividade marcada como concluida---"),
+    mainMenuAnalista(Id).
+
+lidaComOpcaoAtividade(8, Id) :-
+    writeln("Qual o ID atividade que você deseja excluir?"),
+    read(IdAtividade),
+    atividadeController:removerAtividade(IdAtividade),
+    writeln("---Atividade excluída com sucesso---"),
+    mainMenuAnalista(Id).
+
+lidaComOpcaoAtividade(_, Id) :-
+    writeln("Você não selecionou uma opção válida. Selecione algum das opções abaixo\n"),
+    lidaComComando(2, Id).

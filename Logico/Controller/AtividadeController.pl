@@ -1,6 +1,6 @@
 :- module(atividadeController, [exibirAtividade/1, exibirAtividades/0, salvarAtividade/4, buscarAtividadePorId/2,
                                 buscarAtividadePorStatus/2, atualizarStatusAtividade/2, atualizarResponsavelIdAtividade/2,
-                                removerAtividade/1])
+                                removerAtividade/1]).
                                 
 :- use_module(library(http/json)).
 
@@ -27,11 +27,14 @@ atividadesToJSON([H|T], [X|Out]) :-
 
 % Exibir uma atividade
 exibirAtividade([]).
-exibirAtividade([H|_]) :-
+exibirAtividade([H|T]) :-
+    writeln("--------------------------------"),
     write("ID: "), writeln(H.id),
     write("Título: "), writeln(H.titulo),
     write("Descrição: "), writeln(H.descricao),
-    write("Status: "), writeln(H.status).
+    write("Status: "), writeln(H.status),
+    writeln("--------------------------------"),
+    exibirAtividade(T).
 
 % Exibe todas as atividades salvas
 exibirAtividades() :-
@@ -44,7 +47,7 @@ salvarAtividade(Titulo, Descricao, Status, ResponsavelId) :-
     atividadesToJSON(File, ListaAtividadesJSON),
     ultimo_elemento(File, Ultimo),
     (Ultimo = null -> Id = 1 ; Id is Ultimo.id + 1),
-    atividadeToJSON(ID, Titulo, Descricao, Status, ResponsavelId, AtividadeJSON),
+    atividadeToJSON(Id, Titulo, Descricao, Status, ResponsavelId, AtividadeJSON),
     append(ListaAtividadesJSON, [AtividadeJSON], Saida),
     open("./banco/atividades.json", write, Stream),
     write(Stream, Saida),
