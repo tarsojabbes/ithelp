@@ -1,4 +1,4 @@
-:- module(gestorRules, [mainMenuGestor/0,exibirMenuGestor/0, lidarComComando/1, lidarComOpcaoChamado/1, exibeFuncoesChamados/0])
+:- module(gestorRules, [mainMenuGestor/0,exibirMenuGestor/0, lidarComComando/1, lidarComOpcaoChamado/1, exibeFuncoesChamados/0]).
 
 :- use_module("./Controller/AnalistaController.pl").
 :- use_module("./Controller/GestorController.pl").
@@ -25,15 +25,17 @@ exibirMenuGestor():-
     writeln("------------------------------------------"),
     writeln("Qual função você deseja executar?").
 
-lidarComComando("1"):-
+lidarComComando(1):-
     exibeFuncoesChamados(),
     read(Opcao),
     lidarComOpcaoChamado(Opcao).
-lidarComComando("2"):-
-    itemController:exibirItens().
-lidarComComando("3"):-
-    atividadeController:exibirAtividades().
-lidarComComando("4"):-
+lidarComComando(2):-
+    itemController:exibirItens(),
+    mainMenuGestor().
+lidarComComando(3):-
+    atividadeController:exibirAtividades(),
+    mainMenuGestor().
+lidarComComando(4):-
     writeln("Qual o título da atividade a ser criada?"),
     read(Titulo),
     writeln("Qual a descrição da atividade?"),
@@ -41,15 +43,17 @@ lidarComComando("4"):-
     writeln("Quem é o responsável pela atividade?"),
     read(ResponsavelId),
     atividadeController:salvarAtividade(Titulo, Descricao, 'Nao iniciada', ResponsavelId),
-    writeln("---Atividade criada com sucesso---").
-lidarComComando("5"):-
+    writeln("---Atividade criada com sucesso---"),
+    mainMenuGestor().
+lidarComComando(5):-
     writeln("Qual o ID da atividade a ser delegada?"),
     read(AtividadeId),
     writeln("Qual o ID do novo responsável pela atividade?"),
     read(NovoResponsavelId), 
-    atividadeController:atualizarResponsavelIdAtividade(AtividadeId, NovoResponsavelId)
-    writeln("---Atividade repassada com sucesso--").
-lidarComComando("6"):-
+    atividadeController:atualizarResponsavelIdAtividade(AtividadeId, NovoResponsavelId),
+    writeln("---Atividade repassada com sucesso--"),
+    mainMenuGestor().
+lidarComComando(6):-
     writeln("Insira o nome do novo usuário:"),
     read(Nome),
     writeln("Cadastre o email do novo usuário:"),
@@ -57,8 +61,9 @@ lidarComComando("6"):-
     writeln("Cadastre uma senha para o novo usuário:"),
     read(Senha),
     usuarioController:salvarUsuario(Nome,Email,Senha),
-    writeln("---Usuário cadastrado com sucesso---").
-lidarComComando("7"):-
+    writeln("---Usuário cadastrado com sucesso---"),
+    mainMenuGestor().
+lidarComComando(7):-
     writeln("Insira o nome do novo analista:"),
     read(Nome),
     writeln("Cadastre o email do novo analista:"),
@@ -66,10 +71,11 @@ lidarComComando("7"):-
     writeln("Cadastre uma senha para o novo analista:"),
     read(Senha),
     analistaController:salvarAnalista(Nome,Email,Senha,5),
-    writeln("---Analista cadastrado com sucesso---").
+    writeln("---Analista cadastrado com sucesso---"),
+    mainMenuGestor().
 lidarComComando(_):-
     writeln("A função escolhida não existe. Por favor, selecione alguma das opções abaixo"),
-    exibirMenuGestor().
+    mainMenuGestor().
 
 exibeFuncoesChamados():-
     writeln("---FUNÇÕES PARA CHAMADOS---"),
@@ -81,22 +87,45 @@ exibeFuncoesChamados():-
     writeln("------------------------------------------"),
     writeln("Qual função você deseja executar?").
 
-lidarComOpcaoChamado("1"):-
-    chamadoController:exibeChamados().
-lidarComOpcaoChamado("2"):-
-    chamadoController:buscarChamadoPorStatus('Nao iniciado',Chamado).
-lidarComOpcaoChamado("3").
-    % tá faltando o metodo de calcular as estatísticas ainda
-lidarComOpcaoChamado("4"):-
+lidarComOpcaoChamado(1):-
+    chamadoController:exibirChamados(),
+    mainMenuGestor().
+lidarComOpcaoChamado(2):-
+    chamadoController:buscarChamadoPorStatus('Nao iniciado',Chamado),
+    chamadoController:exibirChamado(Chamado),
+    mainMenuGestor().
+lidarComOpcaoChamado(3) :-
+    % Busca pelos chamados em diferentes estados
+    chamadoController:buscarChamadoPorStatus("Nao iniciado", ChamadosNaoIniciados),
+    chamadoController:buscarChamadoPorStatus("Em andamento", ChamadosEmAndamento),
+    chamadoController:buscarChamadoPorStatus("Concluido", ChamadosConcluidos),
+
+    % Determina a quantidade de cada tipo de chamados pelo status
+    chamadoController:quantidadeTotalChamados(Qtd),
+    length(ChamadosNaoIniciados, QtdChamadosNaoIniciados),
+    length(ChamadosEmAndamento, QtdChamadosEmAndamento),
+    length(ChamadosConcluidos, QtdChamadosConcluidos),
+
+    write(Qtd), writeln(" chamados totais"),
+    write(QtdChamadosNaoIniciados), writeln(" chamados não iniciados"),
+    write(QtdChamadosEmAndamento), writeln(" chamados em andamento"),
+    write(QtdChamadosConcluidos), writeln(" chamados concluídos"),
+    mainMenuGestor().
+
+lidarComOpcaoChamado(4):-
     writeln("Qual o ID do chamado a ser acessado?"),
     read(Id),
-    chamadoController:buscarChamadoPorId(Id, Chamado).
-lidarComOpcaoChamado("4"):- writeln("Chamado com ID informado não foi encontrado").
-lidarComOpcaoChamado("5"):-
+    chamadoController:buscarChamadoPorId(Id, Chamado),
+    chamadoController:exibirChamado(Chamado),
+    mainMenuGestor().
+lidarComOpcaoChamado(4):- writeln("Chamado com ID informado não foi encontrado").
+lidarComOpcaoChamado(5):-
     writeln("Qual o título do chamado a ser acessado?"),
     read(Titulo),
-    chamadoController:buscarChamadoPorTitulo(Titulo, Chamado).
-lidarComOpcaoChamado("5"):- writeln("Chamado com título informado não foi encontrado").
+    chamadoController:buscarChamadoPorTitulo(Titulo, Chamado),
+    chamadoController:exibirChamado(Chamado),
+    mainMenuGestor().
+lidarComOpcaoChamado(5):- writeln("Chamado com título informado não foi encontrado").
 lidarComOpcaoChamado(_):-
     writeln("A função escolhida não existe. Por favor, selecione alguma das opções abaixo"),
-    exibirMenuGestor().
+    mainMenuGestor().

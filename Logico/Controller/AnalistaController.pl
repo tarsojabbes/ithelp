@@ -42,7 +42,7 @@ salvarAnalista(Nome, Email, Senha, Avaliacao) :-
     analistasToJSON(File, ListaAnalistasJSON),
     ultimo_elemento(File, Ultimo),
     (Ultimo = null -> Id = 1 ; Id is Ultimo.id + 1),
-    analistaToJSON(ID, Nome, Email, Senha, Avaliacao, AnalistaJSON),
+    analistaToJSON(Id, Nome, Email, Senha, Avaliacao, AnalistaJSON),
     append(ListaAnalistasJSON, [AnalistaJSON], Saida),
     open("./banco/analistas.json", write, Stream),
     write(Stream, Saida),
@@ -73,7 +73,7 @@ buscarAnalistaPorId(Id, Analista) :-
 % Busca um analista pelo Email no JSON
 buscarAnalistaPorEmailJSON([], _, null).
 buscarAnalistaPorEmailJSON([Analista|_], Analista.email, Analista).
-buscarAnalistaPorEmailJSON([_|T], Email, [_|Out]) :- buscarAnalistaPorEmailJSON(T, Email, Out).
+buscarAnalistaPorEmailJSON([_|T], Email, Out) :- buscarAnalistaPorEmailJSON(T, Email, Out).
 
 % Busca um analista pelo Email
 buscarAnalistaPorEmail(Email, Analista) :-

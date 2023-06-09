@@ -1,5 +1,5 @@
 :- module(usuarioController, [exibirUsuario/1, exibirUsuarios/0, salvarUsuario/3, removerUsuario/1,
-                                buscarUsuarioPorEmail/2, buscarUsuarioPorId/2])
+                                buscarUsuarioPorEmail/2, buscarUsuarioPorId/2]).
 
 :- use_module(library(http/json)).
 
@@ -41,7 +41,7 @@ salvarUsuario(Nome, Email, Senha) :-
     usuariosToJSON(File, ListaUsuariosJSON),
     ultimo_elemento(File, Ultimo),
     (Ultimo = null -> Id = 1 ; Id is Ultimo.id + 1),
-    usuarioToJSON(ID, Nome, Email, Senha, UsuarioJSON),
+    usuarioToJSON(Id, Nome, Email, Senha, UsuarioJSON),
     append(ListaUsuariosJSON, [UsuarioJSON], Saida),
     open("./banco/usuarios.json", write, Stream),
     write(Stream, Saida),

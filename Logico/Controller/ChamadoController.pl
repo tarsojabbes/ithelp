@@ -1,6 +1,6 @@
 :- module(chamadoController, [exibirChamado/1, exibirChamados/0, salvarChamado/5, removerChamado/1,
                                 atualizarResponsavelIdChamado/2, buscarChamadoPorId/2, buscarChamadoPorCriador/2,
-                                buscarChamadoPorAnalista/2, buscarChamadoPorStatus/2]).
+                                buscarChamadoPorAnalista/2, buscarChamadoPorStatus/2, quantidadeTotalChamados/1]).
 
 :- use_module(library(http/json)).
 
@@ -41,6 +41,12 @@ chamadosToJSON([], []).
 chamadosToJSON([H|T], [X|Out]) :-
     chamadoToJSON(H.id, H.titulo, H.descricao, H.status, H.criador, H.responsavel, X),
     chamadosToJSON(T, Out).
+
+% Busca todos os chamados
+quantidadeTotalChamados(QtdChamados) :-
+    lerJSON("./banco/chamados.json", File),
+    chamadosToJSON(File, Chamados),
+    length(Chamados, QtdChamados).
 
 % Salva um chamado
 salvarChamado(Titulo, Descricao, Status, Criador, Responsavel) :-
@@ -147,10 +153,3 @@ atualizarResponsavelIdChamado(Id, NovoResponsavelId) :-
     atualizarResponsavelIdChamadoJSON(File, Id, NovoResponsavelId, SaidaParcial),
     chamadosToJSON(SaidaParcial, Saida),
     open("./banco/chamados.json", write, Stream), write(Stream, Saida), close(Stream).
-
-/*
-
-FALTANDO
-- Calcular as estatísticas dos chamados
-
-*/

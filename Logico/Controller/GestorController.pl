@@ -1,5 +1,5 @@
 :- module(gestorController, [exibirGestor/1, exibirGestores/0, salvarGestor/3, removerGestor/1,
-                            buscarGestorPorId/2, buscarGestorPorEmail/2])
+                            buscarGestorPorId/2, buscarGestorPorEmail/2]).
 
 :- use_module(library(http/json)).
 
@@ -42,7 +42,7 @@ salvarGestor(Nome, Email, Senha) :-
     gestoresToJSON(File, ListaGestoresJSON),
     ultimo_elemento(File, Ultimo),
     (Ultimo = null -> Id = 1 ; Id is Ultimo.id + 1),
-    gestorToJSON(ID, Nome, Email, Senha, GestorJSON),
+    gestorToJSON(Id, Nome, Email, Senha, GestorJSON),
     append(ListaGestoresJSON, [GestorJSON], Saida),
     open("./banco/gestores.json", write, Stream),
     write(Stream, Saida),
@@ -73,7 +73,7 @@ buscarGestorPorId(Id, Gestor) :-
 % Busca um gestor pelo Email no JSON
 buscarGestorPorEmailJSON([], _, null).
 buscarGestorPorEmailJSON([Gestor|_], Gestor.email, Gestor).
-buscarGestorPorEmailJSON([_|T], Email, [_|Out]) :- buscarGestorPorEmailJSON(T, Email, Out).
+buscarGestorPorEmailJSON([_|T], Email, Out) :- buscarGestorPorEmailJSON(T, Email, Out).
 
 % Busca um gestor pelo Email
 buscarGestorPorEmail(Email, Gestor) :-
