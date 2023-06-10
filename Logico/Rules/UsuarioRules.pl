@@ -1,14 +1,14 @@
-:- module(usuarioRules, [mainMenuUsuario/0,exibirMenuUsuario/0, lidarComComando/1, lidarComOpcaoChamado/1, exibeFuncoesChamados/0])
+:- module(usuarioRules, [mainMenuUsuario/1]).
 
 :- use_module("./Controller/AnalistaController.pl").
 :- use_module("./Controller/ChamadoController.pl").
 
-mainMenuUsuario():-
-    exibirMenuUsuario(),
+mainMenuUsuario(Id):-
+    exibirMenuUsuario,
     read(Comando),
-    lidarComComando(Comando).
+    lidarComComando(Comando, Id).
 
-exibirMenuUsuario():-
+exibirMenuUsuario:-
     writeln("Enquanto usuário, você pode executar as seguintes funções:"),
     writeln("------FUNÇÕES PARA USUÁRIO----"),
     writeln("1 - Criar chamado"),
@@ -17,7 +17,7 @@ exibirMenuUsuario():-
     writeln("------------------------------------------"),
     writeln("Qual função você deseja executar?").
 
-lidarComComando("1"):-
+lidarComComando(1, Id):-
     writeln("Qual o título do chamado?"),
     read(TituloChamado),
     writeln("Qual a descrição do chamado?"),
@@ -26,30 +26,54 @@ lidarComComando("1"):-
     writeln("1 - Confirma"),
     writeln("2 - Cancela"),
     read(ConfirmaCriacaoChamado),
-    (ConfirmaCriacaoChamado == 1 -> chamadoController.salvarChamado(TituloChamado, DescricaoChamado, "Nao iniciado", Criador, Responsavel)), /* TODO pegar Criador antes, saber quem sera o responsavel */
-    mainMenuUsuario().
+    (ConfirmaCriacaoChamado == 1 -> analistaController:buscarAnalistaPorEmail("analista@email.com", AnalistaPadrao),
+     chamadoController:salvarChamado(TituloChamado, DescricaoChamado, "Nao iniciado", Id, AnalistaPadrao.id),
+     writeln("---Chamado criado com sucesso---") ;
+     writeln("---Criação do chamado cancelada---")),
+    mainMenuUsuario(Id).
 
-lidarComComando("2"):-
-    writeln("Qual o seu ID de Usuário?"), /* TODO ver se tem uma forma automatica de pegar esse id */
-    read(usuarioId),
-    buscarChamadoPorCriador(usuarioId, Chamado),
-    writeln(Chamado), /* TODO usar um if pro caso de não vir nenhum chamado parar com !, e usar uma funcao pra formatar a lista de chamados */
-    mainMenuUsuario().
-lidarComOpcaoChamado("2"):- writeln("Chamados para o usuário informado não foram encontrados").
+lidarComComando(2, Id):-
+    chamadoController:buscarChamadoPorCriador(Id, Chamado),
+    exibirChamadosUsuario(Chamado),
+    mainMenuUsuario(Id).
 
-lidarComComando("3"):-
-    atividadeController:exibirAtividades().
+lidarComComando(3, Id):-
     writeln("Qual o ID do analista?"),
-    read(analistaId),
+    read(AnalistaId),
     writeln("Qual a avaliação para esse analista (1 a 5 estrelas)?"),
-    read(avaliacaoAnalista),
+    read(AvaliacaoAnalista),
     writeln("------CONFIRMA AVALIAÇÃO DO ANALISTA?----"),
     writeln("1 - Confirma"),
     writeln("2 - Cancela"),
     read(ConfirmaAvaliacaoAnalista),
-    lidaComConfirmacaoAvaliacao(ConfirmaAvaliacaoAnalista), /* TODO salvar no banco ou nao, usar um if, nao precisa criar nova regra */
-    mainMenuUsuario().
+    (ConfirmaAvaliacaoAnalista == 1 -> analistaController:editarAvaliacaoAnalista(AnalistaId, AvaliacaoAnalista),
+         writeln("---Avaliação atualizada com sucesso---") ;
+         writeln("---Avaliação cancelada---")),
+    mainMenuUsuario(Id).
 
-lidarComComando(_):-
+lidarComComando(_, Id):-
     writeln("A função escolhida não existe. Por favor, selecione alguma das opções abaixo"),
-    exibirMenuUsuario().
+    mainMenuUsuario(Id).
+
+% exibição dos chamados do usuario
+exibirChamadosUsuario([]) :- writeln("Chamados para o usuário informado não foram encontrados").
+exibirChamadosUsuario(Chamados) :-
+    writeln("--------------------------"),
+    writeln("Chamados do Usuário"),
+    writeln("--------------------------"),
+    nl,
+    printarChamados(Chamados).
+
+printarChamados([]).
+printarChamados([Chamado|Resto]) :-
+    printarChamado(Chamado),
+    printarChamados(Resto).
+
+printarChamado(Chamado) :-
+    write("Chamado: "),
+    writeln(Chamado.titulo),
+    write("Descrição: " ),
+    writeln(Chamado.descricao),
+    write("Status: "),
+    writeln(Chamado.status),
+    nl.

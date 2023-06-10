@@ -89,7 +89,7 @@ editarAvaliacaoAnalistaJSON([H|T], Id, Avaliacao, [H|Out]) :-
 % Atualiza a avaliacao de um analista
 editarAvaliacaoAnalista(Id, NovaNota) :-
     lerJSON("./banco/analistas.json", File),
-    buscarAnalistaPorId(Id, AnalistaEncontrado),
+    buscarAnalistaPorId(Id, [AnalistaEncontrado|_]),
     calculaNovaAvaliacao(AnalistaEncontrado.avaliacao, NovaNota, AvaliacaoNova),
     editarAvaliacaoAnalistaJSON(File, Id, AvaliacaoNova, SaidaParcial),
     analistasToJSON(SaidaParcial, Saida),
@@ -98,4 +98,3 @@ editarAvaliacaoAnalista(Id, NovaNota) :-
 % Calcula nova avaliacao
 calculaNovaAvaliacao(AvaliacaoAntiga, NovaNota, AvaliacaoNova) :-
     AvaliacaoNova is (integer(AvaliacaoAntiga)+integer(NovaNota))/2.
-

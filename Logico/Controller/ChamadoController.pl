@@ -93,14 +93,17 @@ buscarChamadoPorTitulo(Titulo, Chamado) :-
     buscarChamadoPorTituloJSON(File, Titulo, Chamado).
 
 % Busca os chamados pelo criador no JSON
-buscarChamadoPorCriadorJSON([], _, null).
-buscarChamadoPorCriadorJSON([Chamado|_], Chamado.criador, Chamado).
-buscarChamadoPorCriadorJSON([_|T], criadorId, [_|Out]) :- buscarChamadoPorCriadorJSON(T, criadorId, Out).
+buscarChamadoPorCriadorJSON([], _, []).
+buscarChamadoPorCriadorJSON([Chamado|T], Chamado.criador, [Chamado|Out]) :-
+    Chamado.criador = CriadorId,
+    buscarChamadoPorCriadorJSON(T, CriadorId, Out).
+buscarChamadoPorCriadorJSON([_|T], CriadorId, Out) :-
+    buscarChamadoPorCriadorJSON(T, CriadorId, Out).
 
 % Busca os chamados pelo criador
-buscarChamadoPorCriador(criadorId, Chamado) :-
+buscarChamadoPorCriador(CriadorId, Chamado) :-
     lerJSON("./banco/chamados.json", File),
-    buscarChamadoPorCriadorJSON(File, criadorId, Chamado).
+    buscarChamadoPorCriadorJSON(File, CriadorId, Chamado).
 
 % Busca os chamados pelo analista responsável no JSON
 buscarChamadoPorAnalistaJSON([], _, []).

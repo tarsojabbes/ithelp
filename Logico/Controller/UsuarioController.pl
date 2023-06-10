@@ -70,7 +70,7 @@ buscarUsuarioPorId(Id, Usuario) :-
     buscarUsuarioPorIdJSON(File, Id, Usuario).
 
 % Busca um usuario pelo email no JSON
-buscarUsuarioPorEmailJSON([], _, []).
+buscarUsuarioPorEmailJSON([], _, null).
 buscarUsuarioPorEmailJSON([H|_], H.email, H).
 buscarUsuarioPorEmailJSON([_|T], Email, Out) :- buscarUsuarioPorEmailJSON(T, Email, Out).
 
