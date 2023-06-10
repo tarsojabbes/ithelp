@@ -22,6 +22,7 @@ exibirMenuGestor():-
     writeln("5 - Delegar atividade"),
     writeln("6 - Criar novo usuário"),
     writeln("7 - Criar novo analista"),
+    writeln("8 - Logout"),
     writeln("------------------------------------------"),
     writeln("Qual função você deseja executar?").
 
@@ -73,6 +74,7 @@ lidarComComando(7):-
     analistaController:salvarAnalista(Nome,Email,Senha,5),
     writeln("---Analista cadastrado com sucesso---"),
     mainMenuGestor().
+lidarComComando(8):-!.
 lidarComComando(_):-
     writeln("A função escolhida não existe. Por favor, selecione alguma das opções abaixo"),
     mainMenuGestor().

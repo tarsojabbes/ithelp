@@ -2,8 +2,10 @@
 
 :- use_module("./Rules/AnalistaRules.pl").
 :- use_module("./Rules/GestorRules.pl").
+:- use_module("./Rules/UsuarioRules.pl").
 :- use_module("./Controller/AnalistaController.pl").
 :- use_module("./Controller/GestorController.pl").
+:- use_module("./Controller/UsuarioController.pl").
 
 exibeMenuLogin :-
     writeln("Com qual perfil de acesso você deseja utilizar o sistema?"),
@@ -22,7 +24,8 @@ loginAnalista :-
         main
     ; (Analista.senha = Senha -> 
          write("Seja bem vindo, "), writeln(Analista.nome), 
-         mainMenuAnalista(Analista.id)
+         analistaRules:mainMenuAnalista(Analista.id),
+         main
         ;   writeln("Senha incorreta"),
             main
     )).
@@ -38,16 +41,35 @@ loginGestor :-
         main
     ; (Gestor.senha = Senha -> 
         write("Seja bem vindo, "), writeln(Gestor.nome),
-        mainMenuGestor
+        gestorRules:mainMenuGestor,
+        main
         ;   writeln("Senha incorreta"),
             main
     )).
 
+loginUsuario :-
+    writeln("Informe o seu email:"),
+    read(Email),
+    writeln("Informe a sua senha:"),
+    read(Senha),
+    usuarioController:buscarUsuarioPorEmail(Email, Usuario),
+    (Usuario = null ->
+        writeln("Usuário não encontrado"),
+        main
+    ; (Usuario.senha = Senha ->
+        write("Seja bem vindo, "), writeln(Usuario.nome),
+        usuarioRules:mainMenuUsuario(Usuario.id),
+        main
+        ;   writeln("Senha incorreta"),
+            main
+    )).
 
 main :-
     exibeMenuLogin,
     read(PerfilAtom),
     atom_chars(PerfilAtom, [Perfil]),
-    (Perfil = 'A' -> loginAnalista ; 
-        (Perfil = 'G' -> loginGestor)).
-    
+    (Perfil = 'A' -> loginAnalista ;
+    (Perfil = 'G' -> loginGestor) ;
+    (Perfil = 'U' -> loginUsuario) ;
+    (writeln("Opção inválida"),
+    main)).

@@ -17,6 +17,7 @@ exibirMenuAnalista :-
     writeln("2 - Gerenciar atividades"),
     writeln("3 - Gerenciar itens do inventário"),
     writeln("4 - Ver minhas estatísticas"),
+    writeln("5 - Logout"),
     writeln("------------------------------------------"),
     writeln("Qual função você deseja executar?").
 
@@ -37,6 +38,8 @@ lidaComComando(3, Id) :-
 
 lidaComComando(4, Id) :-
     lidaComOpcaoEstatisticasProprias(Id).
+
+lidaComComando(5, _):-!.
 
 lidaComComando(_, Id) :-
     writeln("A função escolhida não existe. Por favor, selecione alguma das opções abaixo"),
