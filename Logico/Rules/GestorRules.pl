@@ -93,7 +93,7 @@ lidarComOpcaoChamado(1):-
     chamadoController:exibirChamados(),
     mainMenuGestor().
 lidarComOpcaoChamado(2):-
-    chamadoController:buscarChamadoPorStatus('Nao iniciado',Chamado),
+    chamadoController:buscarChamadoPorStatus("Nao iniciado", Chamado),
     chamadoController:exibirChamado(Chamado),
     mainMenuGestor().
 lidarComOpcaoChamado(3) :-
@@ -125,9 +125,8 @@ lidarComOpcaoChamado(5):-
     writeln("Qual o título do chamado a ser acessado?"),
     read(Titulo),
     chamadoController:buscarChamadoPorTitulo(Titulo, Chamado),
-    chamadoController:exibirChamado(Chamado),
+    chamadoController:exibirChamado([Chamado]),
     mainMenuGestor().
-lidarComOpcaoChamado(5):- writeln("Chamado com título informado não foi encontrado").
 lidarComOpcaoChamado(_):-
     writeln("A função escolhida não existe. Por favor, selecione alguma das opções abaixo"),
     mainMenuGestor().

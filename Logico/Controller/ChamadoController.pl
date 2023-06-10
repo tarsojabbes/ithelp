@@ -85,7 +85,7 @@ buscarChamadoPorId(Id, Chamado) :-
 % Busca um chamado pelo título no JSON
 buscarChamadoPorTituloJSON([], _, null).
 buscarChamadoPorTituloJSON([Chamado|_], Chamado.titulo, Chamado).
-buscarChamadoPorTituloJSON([_|T], Titulo, [_|Out]) :- buscarChamadoPorTituloJSON(T, Titulo, Out).
+buscarChamadoPorTituloJSON([_|T], Titulo, Out) :- buscarChamadoPorTituloJSON(T, Titulo, Out).
 
 % Busca um chamado pelo titulo
 buscarChamadoPorTitulo(Titulo, Chamado) :-

@@ -79,4 +79,6 @@ printarChamado(Chamado) :-
     writeln(Chamado.descricao),
     write("Status: "),
     writeln(Chamado.status),
+    write("Responsável: "),
+    writeln(Chamado.responsavel),
     nl.

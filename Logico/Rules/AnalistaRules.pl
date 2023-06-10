@@ -265,11 +265,9 @@ lidaComOpcaoAtividade(_, Id) :-
 
 % lógica para as estatísticas próprias
 lidaComOpcaoEstatisticasProprias(Id) :-
-    writeln("Qual o ID do analista que você deseja ver as estatísticas?"),
-    read(AnalistaId), nl,
-    analistaController:buscarAnalistaPorId(AnalistaId, Analista),
+    analistaController:buscarAnalistaPorId(Id, Analista),
     exibirAvaliacaoAnalista(Analista),
-    exibirChamadosAnalista(AnalistaId),
+    exibirChamadosAnalista(Id),
     mainMenuAnalista(Id).
 
 % exibição da avaliação do analista
