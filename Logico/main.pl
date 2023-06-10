@@ -24,7 +24,8 @@ loginAnalista :-
         main
     ; (Analista.senha = Senha -> 
          write("Seja bem vindo, "), writeln(Analista.nome), 
-         analistaRules:mainMenuAnalista(Analista.id)
+         analistaRules:mainMenuAnalista(Analista.id),
+         main
         ;   writeln("Senha incorreta"),
             main
     )).
@@ -40,7 +41,8 @@ loginGestor :-
         main
     ; (Gestor.senha = Senha -> 
         write("Seja bem vindo, "), writeln(Gestor.nome),
-        gestorRules:mainMenuGestor
+        gestorRules:mainMenuGestor,
+        main
         ;   writeln("Senha incorreta"),
             main
     )).
@@ -56,7 +58,8 @@ loginUsuario :-
         main
     ; (Usuario.senha = Senha ->
         write("Seja bem vindo, "), writeln(Usuario.nome),
-        usuarioRules:mainMenuUsuario(Usuario.id)
+        usuarioRules:mainMenuUsuario(Usuario.id),
+        main
         ;   writeln("Senha incorreta"),
             main
     )).

@@ -14,6 +14,7 @@ exibirMenuUsuario:-
     writeln("1 - Criar chamado"),
     writeln("2 - Acompanhar chamados que você criou"),
     writeln("3 - Avaliar analista responsável pelos seus chamados"),
+    writeln("4 - Logout"),
     writeln("------------------------------------------"),
     writeln("Qual função você deseja executar?").
 
@@ -50,6 +51,8 @@ lidarComComando(3, Id):-
          writeln("---Avaliação atualizada com sucesso---") ;
          writeln("---Avaliação cancelada---")),
     mainMenuUsuario(Id).
+
+lidarComComando(4, _):-!.
 
 lidarComComando(_, Id):-
     writeln("A função escolhida não existe. Por favor, selecione alguma das opções abaixo"),
